@@ -3,41 +3,53 @@ package com.veinmine.mod;
 import com.veinmine.mod.registry.ModBlocks;
 import com.veinmine.mod.util.OreClassifier;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 public class VeinMineEvents {
 
-    private static final float ORE_SPEED_MULTIPLIER = 6.0f;
+    private static final float SHELL_SPEED_MULTIPLIER = 1.8f;
 
     @SubscribeEvent
     public void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         BlockState state = event.getState();
-        if (state == null || !OreClassifier.isPluckableOre(state)) {
+        if (state == null) {
             return;
         }
-        event.setNewSpeed(event.getNewSpeed() * ORE_SPEED_MULTIPLIER);
+        if (ModBlocks.isShell(state)) {
+            event.setNewSpeed(event.getNewSpeed() * SHELL_SPEED_MULTIPLIER);
+        }
     }
 
     @SubscribeEvent
-    public void onBreak(BlockEvent.BreakEvent event) {
-        Player player = event.getPlayer();
-        if (!(player instanceof ServerPlayer) || player.isCreative()) {
+    public void onRightClickOre(PlayerInteractEvent.RightClickBlock event) {
+        Player player = event.getEntity();
+        if (!(player instanceof ServerPlayer serverPlayer) || player.isCreative()) {
             return;
         }
         if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if (event.getHand() != InteractionHand.MAIN_HAND) {
+            return;
+        }
+        ItemStack tool = player.getMainHandItem();
+        if (!tool.canPerformAction(ItemAbilities.PICKAXE_DIG)) {
             return;
         }
 
@@ -48,14 +60,14 @@ public class VeinMineEvents {
         }
 
         Block replacement = ModBlocks.getShellFor(state);
-        ItemStack tool = player.getMainHandItem();
 
         event.setCanceled(true);
+        event.setCancellationResult(InteractionResult.SUCCESS);
 
         Block.dropResources(state, serverLevel, pos, null, player, tool);
         state.spawnAfterBreak(serverLevel, pos, tool, true);
         if (!tool.isEmpty()) {
-            tool.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
+            tool.hurtAndBreak(1, serverPlayer, EquipmentSlot.MAINHAND);
         }
 
         serverLevel.setBlock(pos, replacement.defaultBlockState(), Block.UPDATE_ALL);

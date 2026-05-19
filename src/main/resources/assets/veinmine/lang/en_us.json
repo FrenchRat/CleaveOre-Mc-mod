@@ -1,4 +1,6 @@
 {
+  "key.categories.veinmine": "CleaveOre",
+  "key.veinmine.ore_pluck": "Ore Pluck (Use Item)",
   "block.veinmine.hollow_stone_shell": "Hollow Stone Shell",
   "block.veinmine.hollow_deepslate_shell": "Hollow Deepslate Shell",
   "block.veinmine.hollow_nether_shell": "Hollow Nether Shell",

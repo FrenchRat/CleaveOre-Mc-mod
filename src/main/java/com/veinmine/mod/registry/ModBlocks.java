@@ -17,18 +17,18 @@ public final class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(VeinMineMod.MOD_ID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(VeinMineMod.MOD_ID);
 
-    public static final DeferredBlock<Block> HOLLOW_STONE_SHELL = registerShell("hollow_stone_shell", Blocks.STONE);
-    public static final DeferredBlock<Block> HOLLOW_DEEPSLATE_SHELL = registerShell("hollow_deepslate_shell", Blocks.DEEPSLATE);
-    public static final DeferredBlock<Block> HOLLOW_NETHER_SHELL = registerShell("hollow_nether_shell", Blocks.NETHERRACK);
-    public static final DeferredBlock<Block> HOLLOW_ANCIENT_DEBRIS_SHELL = registerShell("hollow_ancient_debris_shell", Blocks.ANCIENT_DEBRIS);
+    public static final DeferredBlock<Block> HOLLOW_STONE_SHELL = registerShell("hollow_stone_shell", Blocks.STONE, 1.25f, 1.8f);
+    public static final DeferredBlock<Block> HOLLOW_DEEPSLATE_SHELL = registerShell("hollow_deepslate_shell", Blocks.DEEPSLATE, 2.0f, 2.6f);
+    public static final DeferredBlock<Block> HOLLOW_NETHER_SHELL = registerShell("hollow_nether_shell", Blocks.NETHERRACK, 1.0f, 1.4f);
+    public static final DeferredBlock<Block> HOLLOW_ANCIENT_DEBRIS_SHELL = registerShell("hollow_ancient_debris_shell", Blocks.ANCIENT_DEBRIS, 2.2f, 3.2f);
 
     private ModBlocks() {
     }
 
-    private static DeferredBlock<Block> registerShell(String name, Block baseBlock) {
+    private static DeferredBlock<Block> registerShell(String name, Block baseBlock, float destroyTime, float explosionResistance) {
         DeferredBlock<Block> block = BLOCKS.register(name, () -> new Block(
             BlockBehaviour.Properties.ofFullCopy(baseBlock)
-                .requiresCorrectToolForDrops()
+                .strength(destroyTime, explosionResistance)
                 .noLootTable()
         ));
         DeferredItem<BlockItem> item = ITEMS.registerSimpleBlockItem(name, block, new Item.Properties());
@@ -47,5 +47,13 @@ public final class ModBlocks {
             return HOLLOW_ANCIENT_DEBRIS_SHELL.get();
         }
         return HOLLOW_STONE_SHELL.get();
+    }
+
+    public static boolean isShell(BlockState state) {
+        Block block = state.getBlock();
+        return block == HOLLOW_STONE_SHELL.get()
+            || block == HOLLOW_DEEPSLATE_SHELL.get()
+            || block == HOLLOW_NETHER_SHELL.get()
+            || block == HOLLOW_ANCIENT_DEBRIS_SHELL.get();
     }
 }
