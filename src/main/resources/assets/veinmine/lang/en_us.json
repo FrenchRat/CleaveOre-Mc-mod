@@ -1,4 +1,7 @@
 {
+  "block.veinmine.hollow_stone_shell": "Hollow Stone Shell",
+  "block.veinmine.hollow_deepslate_shell": "Hollow Deepslate Shell",
+  "block.veinmine.hollow_nether_shell": "Hollow Nether Shell",
   "block.veinmine.hollow_coal_shell":     "Hollow Coal Shell",
   "block.veinmine.hollow_iron_shell":     "Hollow Iron Shell",
   "block.veinmine.hollow_gold_shell":     "Hollow Gold Shell",

@@ -1,7 +1,5 @@
-{
+﻿{
   "variants": {
-    "": {
-      "model": "veinmine:block/hollow_ancient_debris_shell"
-    }
+    "": { "model": "veinmine:block/hollow_ancient_debris_shell" }
   }
 }

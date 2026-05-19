@@ -1,61 +1,63 @@
 plugins {
-    id 'fabric-loom' version '1.5-SNAPSHOT'
+    id 'java-library'
     id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.141'
 }
 
-version = '1.0.1'
-group = 'com.veinmine'
+version = mod_version
+group = mod_group_id
 
 base {
     archivesName = 'cleaveore'
 }
 
-repositories {
-    mavenCentral()
-}
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-// ── Minecraft & Fabric versions ───────────────────────────────────────────────
-// Targeting Minecraft 1.20.4 — the last 1.20.x release before 1.21.
-// Update these three version strings together when porting to a new MC version.
-//
-// Find matching versions at: https://fabricmc.net/develop/
-def minecraft_version      = "1.20.4"
-def yarn_mappings          = "1.20.4+build.3"
-def loader_version         = "0.15.7"
-def fabric_api_version     = "0.96.4+1.20.4"
+neoForge {
+    version = project.neo_version
 
-dependencies {
-    // Use Fabric Loom's gradle extension for MC + mappings
-    minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
 
-    // Fabric API — provides the event hooks, registry wrappers, particle
-    // factory registry, and FabricBlockSettings we use throughout the mod
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
-}
+    runs {
+        client {
+            client()
+        }
+        server {
+            server()
+            programArgument '--nogui'
+        }
+    }
 
-processResources {
-    inputs.property "version", project.version
-
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
     }
 }
+
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+        minecraft_version      : minecraft_version,
+        minecraft_version_range: minecraft_version_range,
+        neo_version            : neo_version,
+        loader_version_range   : loader_version_range,
+        mod_id                 : mod_id,
+        mod_name               : mod_name,
+        mod_license            : mod_license,
+        mod_version            : mod_version
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.release = 17
-}
-
-java {
-    // Generates -sources.jar alongside the mod jar for easier debugging
-    withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
-jar {
-    from("LICENSE") {
-        rename { "${it}_${project.base.archivesName.get()}"}
-    }
+    options.encoding = 'UTF-8'
 }

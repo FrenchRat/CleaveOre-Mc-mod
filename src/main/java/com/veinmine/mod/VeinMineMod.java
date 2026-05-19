@@ -1,33 +1,22 @@
 package com.veinmine.mod;
 
+import com.mojang.logging.LogUtils;
 import com.veinmine.mod.registry.ModBlocks;
-import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
 
-/**
- * VeinMine Mod - Two-Stage Ore Mining
- *
- * How it works:
- * - Stage 1: Player hits an ore block → ore gem/vein breaks off quickly (fast mining speed),
- *             leaving behind a "hollowed" stone shell block.
- * - Stage 2: Player mines the stone shell normally → it breaks like regular stone.
- *
- * The "stripped" blocks are registered as new block types that look like hollow stone
- * but still count as full blocks for all purposes (light, collisions, etc.)
- */
-public class VeinMineMod implements ModInitializer {
-
+@Mod(VeinMineMod.MOD_ID)
+public class VeinMineMod {
     public static final String MOD_ID = "veinmine";
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    public static final Logger LOGGER = LogUtils.getLogger();
 
-    @Override
-    public void onInitialize() {
-        LOGGER.info("VeinMine Mod initializing...");
-
-        // Register our custom blocks (the hollowed-out shell variants)
-        ModBlocks.register();
-
-        LOGGER.info("VeinMine Mod ready!");
+    public VeinMineMod(IEventBus modEventBus, ModContainer modContainer) {
+        ModBlocks.BLOCKS.register(modEventBus);
+        ModBlocks.ITEMS.register(modEventBus);
+        NeoForge.EVENT_BUS.register(new VeinMineEvents());
+        LOGGER.info("CleaveOre (NeoForge) initialized.");
     }
 }
