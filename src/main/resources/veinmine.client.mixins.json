@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.veinmine.mod.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "OreHardnessMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
