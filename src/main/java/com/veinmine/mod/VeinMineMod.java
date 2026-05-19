@@ -1,7 +1,6 @@
 package com.veinmine.mod;
 
 import com.veinmine.mod.registry.ModBlocks;
-import com.veinmine.mod.registry.ModParticles;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +27,6 @@ public class VeinMineMod implements ModInitializer {
 
         // Register our custom blocks (the hollowed-out shell variants)
         ModBlocks.register();
-
-        // Register our custom particle effects for the ore-popping visual
-        ModParticles.register();
 
         LOGGER.info("VeinMine Mod ready!");
     }
