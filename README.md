@@ -8,11 +8,14 @@ CleaveOre changes ore mining into a two-step flow:
 ## Available Builds (Both)
 
 ### 1) NeoForge (Current)
-- Minecraft: `1.21.4`
+- Minecraft: `1.21.1` (source target in `main`)
 - Loader: `NeoForge`
 - Java: `21`
 - Source on `main` branch
-- Output jar: `build/libs/cleaveore-1.1.0-beta-neoforge.jar`
+- Output jar: `build/libs/cleaveore-1.1.0-beta-neoforge-1.21.1.jar`
+
+Additional NeoForge release:
+- `v1.1.0-beta-neoforge` for Minecraft `1.21.4`
 
 ### 2) Fabric (Legacy Beta)
 - Minecraft: `1.20.4`
@@ -37,8 +40,8 @@ CleaveOre changes ore mining into a two-step flow:
 ## Install
 
 ### NeoForge 1.21.4
-1. Install NeoForge for Minecraft 1.21.4.
-2. Put `cleaveore-1.1.0-beta-neoforge.jar` into your `mods` folder.
+1. Install NeoForge for Minecraft 1.21.1 or 1.21.4 (matching the jar you downloaded).
+2. Put the matching CleaveOre jar into your `mods` folder.
 3. Launch with NeoForge profile.
 
 ### Fabric 1.20.4 (Legacy)
