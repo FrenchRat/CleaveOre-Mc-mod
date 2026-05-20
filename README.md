@@ -1,12 +1,13 @@
-﻿# CleaveOre
+# CleaveOre
 
-CleaveOre is currently targeted for popular NeoForge 1.21 builds:
+CleaveOre is available across the most-used loader/version targets in this repo:
 
-- Minecraft: `1.21.1` and `1.21.4`
-- Loader: `NeoForge`
-- Java: `21`
+- NeoForge `1.21.1` (Java `21`) - branch: `main`
+- NeoForge `1.21.4` (Java `21`) - branch: `main`
+- Fabric `1.20.1` (Java `17`) - branch: `fabric-1.20.1`
+- Forge `1.20.1` (Java `17`) - branch: `forge-1.20.1`
 
-## Controls (New)
+## Controls
 
 - **Normal mine (left-click)**: vanilla break behavior (great for instant peeking/checking behind blocks).
 - **Ore pluck (use/right-click on ore)**: cleaves ore drop out and leaves a hollow shell.
@@ -16,7 +17,7 @@ CleaveOre is currently targeted for popular NeoForge 1.21 builds:
 ## Keybind Compatibility
 
 - Ore pluck uses Minecraft's standard **Use Item / Place Block** input path, so it follows user key remaps.
-- CleaveOre also provides its own keybind category in Controls:
+- CleaveOre provides its own keybind category in Controls:
   - Category: `CleaveOre`
   - Entry: `Ore Pluck (Use Item)`
 
@@ -34,26 +35,19 @@ CleaveOre is currently targeted for popular NeoForge 1.21 builds:
 - Pluck detection uses ore tags + ore-like naming fallback for broad mod compatibility.
 - Mods that heavily override custom ore break logic may still behave differently on right-click pluck.
 
-## Suggested Test Pass
-
-1. Compare wooden/stone/iron/diamond/netherite pickaxe shell-break speed after pluck.
-2. Test right-click pluck with common modded pickaxes/multitools.
-3. Hold shield/lantern/torch in offhand and confirm no accidental placement/use while plucking.
-4. Pluck each ore from different faces and verify drop direction looks correct.
-5. Verify Fortune/Silk Touch outcomes on pluck for vanilla and modded ores.
-6. Confirm durability trend is lower than full vanilla mining over 100+ plucks.
-
 ## Build
+
+Build from the branch that matches your loader/version target.
 
 ```powershell
 .\gradlew.bat build
 ```
 
-Default output jar (current default target: 1.21.1):
+Example default output jar on `main`:
 
 - `build/libs/cleaveore-1.1.1-beta-neoforge-1.21.1.jar`
 
-Build both popular targets:
+Build both NeoForge targets from `main`:
 
 ```powershell
 .\scripts\build-neoforge-versions.ps1
@@ -61,11 +55,22 @@ Build both popular targets:
 
 Multi-version jars are copied into `dist/`.
 
+## Releases
+
+- NeoForge 1.21.1: `v1.1.1-beta-neoforge-1.21.1`
+- NeoForge 1.21.4: build from `main` via `.\scripts\build-neoforge-versions.ps1`
+- Fabric 1.20.1: `v1.1.1-beta-fabric-1.20.1`
+- Forge 1.20.1: `v1.1.1-beta-forge-1.20.1`
+
+Download jars from:
+
+- [GitHub Releases](https://github.com/FrenchRat/CleaveOre-Mc-mod/releases)
+
 ## Install
 
-1. Install NeoForge for the matching Minecraft version (`1.21.1` or `1.21.4`).
+1. Install the matching loader/version for the jar you downloaded.
 2. Put the matching `cleaveore-...` jar in your `mods` folder.
-3. Launch with the matching NeoForge profile.
+3. Launch the game with that loader profile.
 
 ## Repository
 
