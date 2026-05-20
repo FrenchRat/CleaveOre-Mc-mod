@@ -3,6 +3,7 @@ package com.veinmine.mod;
 import com.veinmine.mod.registry.ModBlocks;
 import com.veinmine.mod.util.OreClassifier;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.InteractionHand;
@@ -24,6 +25,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 public class VeinMineEvents {
 
     private static final float SHELL_SPEED_MULTIPLIER = 1.8f;
+    private static final float PLUCK_DURABILITY_CHANCE = 0.6f;
 
     @SubscribeEvent
     public void onBreakSpeed(PlayerEvent.BreakSpeed event) {
@@ -45,6 +47,18 @@ public class VeinMineEvents {
         if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
             return;
         }
+        BlockPos pos = event.getPos();
+        BlockState state = serverLevel.getBlockState(pos);
+        boolean hasMainPickaxe = player.getMainHandItem().canPerformAction(ItemAbilities.PICKAXE_DIG);
+        boolean targetIsOre = OreClassifier.isPluckableOre(state);
+
+        // Prevent offhand placements/uses (shield, lantern, etc.) while pluck conditions are met.
+        if (event.getHand() == InteractionHand.OFF_HAND && hasMainPickaxe && targetIsOre) {
+            event.setCanceled(true);
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            return;
+        }
+
         if (event.getHand() != InteractionHand.MAIN_HAND) {
             return;
         }
@@ -52,9 +66,6 @@ public class VeinMineEvents {
         if (!tool.canPerformAction(ItemAbilities.PICKAXE_DIG)) {
             return;
         }
-
-        BlockPos pos = event.getPos();
-        BlockState state = serverLevel.getBlockState(pos);
         if (!OreClassifier.isPluckableOre(state)) {
             return;
         }
@@ -64,9 +75,12 @@ public class VeinMineEvents {
         event.setCanceled(true);
         event.setCancellationResult(InteractionResult.SUCCESS);
 
-        Block.dropResources(state, serverLevel, pos, null, player, tool);
+        Direction face = event.getFace() == null ? Direction.UP : event.getFace();
+        for (ItemStack drop : Block.getDrops(state, serverLevel, pos, null, player, tool)) {
+            Block.popResourceFromFace(serverLevel, pos, face, drop);
+        }
         state.spawnAfterBreak(serverLevel, pos, tool, true);
-        if (!tool.isEmpty()) {
+        if (!tool.isEmpty() && serverLevel.random.nextFloat() < PLUCK_DURABILITY_CHANCE) {
             tool.hurtAndBreak(1, serverPlayer, EquipmentSlot.MAINHAND);
         }
 

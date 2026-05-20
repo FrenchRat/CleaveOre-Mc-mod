@@ -29,6 +29,7 @@ public final class ModBlocks {
         DeferredBlock<Block> block = BLOCKS.register(name, () -> new Block(
             BlockBehaviour.Properties.ofFullCopy(baseBlock)
                 .strength(destroyTime, explosionResistance)
+                .requiresCorrectToolForDrops()
                 .noLootTable()
         ));
         DeferredItem<BlockItem> item = ITEMS.registerSimpleBlockItem(name, block, new Item.Properties());

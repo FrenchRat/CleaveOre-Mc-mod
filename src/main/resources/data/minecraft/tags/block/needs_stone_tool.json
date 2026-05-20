@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "veinmine:hollow_stone_shell",
+    "veinmine:hollow_deepslate_shell",
+    "veinmine:hollow_nether_shell",
+    "veinmine:hollow_ancient_debris_shell"
+  ]
+}
