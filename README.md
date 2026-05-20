@@ -1,8 +1,8 @@
 ﻿# CleaveOre
 
-CleaveOre is currently targeted for:
+CleaveOre is currently targeted for popular NeoForge 1.21 builds:
 
-- Minecraft: `1.21.1`
+- Minecraft: `1.21.1` and `1.21.4`
 - Loader: `NeoForge`
 - Java: `21`
 
@@ -49,15 +49,23 @@ CleaveOre is currently targeted for:
 .\gradlew.bat build
 ```
 
-Output jar:
+Default output jar (current default target: 1.21.1):
 
 - `build/libs/cleaveore-1.1.1-beta-neoforge-1.21.1.jar`
 
+Build both popular targets:
+
+```powershell
+.\scripts\build-neoforge-versions.ps1
+```
+
+Multi-version jars are copied into `dist/`.
+
 ## Install
 
-1. Install NeoForge for Minecraft 1.21.1.
-2. Put `cleaveore-1.1.1-beta-neoforge-1.21.1.jar` in your `mods` folder.
-3. Launch with NeoForge 1.21.1 profile.
+1. Install NeoForge for the matching Minecraft version (`1.21.1` or `1.21.4`).
+2. Put the matching `cleaveore-...` jar in your `mods` folder.
+3. Launch with the matching NeoForge profile.
 
 ## Repository
 
