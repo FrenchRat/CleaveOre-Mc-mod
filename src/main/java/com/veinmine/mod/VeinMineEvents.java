@@ -17,10 +17,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.ItemAbilities;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.common.ToolActions;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class VeinMineEvents {
 
@@ -49,7 +49,7 @@ public class VeinMineEvents {
         }
         BlockPos pos = event.getPos();
         BlockState state = serverLevel.getBlockState(pos);
-        boolean hasMainPickaxe = player.getMainHandItem().canPerformAction(ItemAbilities.PICKAXE_DIG);
+        boolean hasMainPickaxe = player.getMainHandItem().canPerformAction(ToolActions.PICKAXE_DIG);
         boolean targetIsOre = OreClassifier.isPluckableOre(state);
 
         // Prevent offhand placements/uses (shield, lantern, etc.) while pluck conditions are met.
@@ -63,7 +63,7 @@ public class VeinMineEvents {
             return;
         }
         ItemStack tool = player.getMainHandItem();
-        if (!tool.canPerformAction(ItemAbilities.PICKAXE_DIG)) {
+        if (!tool.canPerformAction(ToolActions.PICKAXE_DIG)) {
             return;
         }
         if (!OreClassifier.isPluckableOre(state)) {
@@ -81,7 +81,7 @@ public class VeinMineEvents {
         }
         state.spawnAfterBreak(serverLevel, pos, tool, true);
         if (!tool.isEmpty() && serverLevel.random.nextFloat() < PLUCK_DURABILITY_CHANCE) {
-            tool.hurtAndBreak(1, serverPlayer, EquipmentSlot.MAINHAND);
+            tool.hurtAndBreak(1, serverPlayer, p -> p.broadcastBreakEvent(EquipmentSlot.MAINHAND));
         }
 
         serverLevel.setBlock(pos, replacement.defaultBlockState(), Block.UPDATE_ALL);
