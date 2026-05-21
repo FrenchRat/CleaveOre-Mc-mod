@@ -8,7 +8,7 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="C0ll1nDr4k3"
 description='''
-Two-stage ore mining for NeoForge: ores are cleaved out quickly, leaving hollow shell blocks behind.
+Right-click ores with a pickaxe to pluck drops and leave a hollow shell.
 '''
 
 [[dependencies.${mod_id}]]

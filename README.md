@@ -1,4 +1,4 @@
-﻿# CleaveOre
+# CleaveOre
 
 CleaveOre is currently targeted for:
 
@@ -51,12 +51,12 @@ CleaveOre is currently targeted for:
 
 Output jar:
 
-- `build/libs/cleaveore-1.1.1-beta-neoforge-1.21.1.jar`
+- `build/libs/cleaveore-1.1.1-neoforge-1.21.1.jar`
 
 ## Install
 
 1. Install NeoForge for Minecraft 1.21.1.
-2. Put `cleaveore-1.1.1-beta-neoforge-1.21.1.jar` in your `mods` folder.
+2. Put `cleaveore-1.1.1-neoforge-1.21.1.jar` in your `mods` folder.
 3. Launch with NeoForge 1.21.1 profile.
 
 ## Repository
