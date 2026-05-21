@@ -1,12 +1,12 @@
-# CleaveOre
+# Cleave Ore
 
-CleaveOre is currently targeted for:
+Cleave Ore is currently targeted for:
 
 - Minecraft: `1.21.1`
 - Loader: `NeoForge`
 - Java: `21`
 
-## Controls (New)
+## Controls
 
 - **Normal mine (left-click)**: vanilla break behavior (great for instant peeking/checking behind blocks).
 - **Ore pluck (use/right-click on ore)**: cleaves ore drop out and leaves a hollow shell.
@@ -16,8 +16,8 @@ CleaveOre is currently targeted for:
 ## Keybind Compatibility
 
 - Ore pluck uses Minecraft's standard **Use Item / Place Block** input path, so it follows user key remaps.
-- CleaveOre also provides its own keybind category in Controls:
-  - Category: `CleaveOre`
+- Cleave Ore also provides its own keybind category in Controls:
+  - Category: `Cleave Ore`
   - Entry: `Ore Pluck (Use Item)`
 
 ## Gameplay Flow
@@ -51,12 +51,12 @@ CleaveOre is currently targeted for:
 
 Output jar:
 
-- `build/libs/cleaveore-1.1.1-neoforge-1.21.1.jar`
+- `build/libs/cleaveore-1.1.2-neoforge-1.21.1.jar`
 
 ## Install
 
 1. Install NeoForge for Minecraft 1.21.1.
-2. Put `cleaveore-1.1.1-neoforge-1.21.1.jar` in your `mods` folder.
+2. Put `cleaveore-1.1.2-neoforge-1.21.1.jar` in your `mods` folder.
 3. Launch with NeoForge 1.21.1 profile.
 
 ## Repository

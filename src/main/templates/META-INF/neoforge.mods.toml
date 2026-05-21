@@ -6,9 +6,9 @@ license="${mod_license}"
 modId="${mod_id}"
 version="${mod_version}"
 displayName="${mod_name}"
-authors="C0ll1nDr4k3"
+authors="CollinDrake"
 description='''
-Right-click ores with a pickaxe to pluck drops and leave a hollow shell.
+Right-click ores with a pickaxe to pluck the ore and leave a hollow shell.
 '''
 
 [[dependencies.${mod_id}]]
