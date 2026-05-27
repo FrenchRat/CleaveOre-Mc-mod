@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,7 +37,7 @@ public class VeinMineEvents {
         }
         BlockPos pos = event.getPos();
         BlockState state = serverLevel.getBlockState(pos);
-        boolean hasMainPickaxe = player.getMainHandItem().canPerformAction(ToolActions.PICKAXE_DIG);
+        boolean hasMainPickaxe = isPickaxeLikeTool(player.getMainHandItem(), state);
         boolean targetIsOre = OreClassifier.isPluckableOre(state);
 
         // Prevent offhand placements/uses (shield, lantern, etc.) while pluck conditions are met.
@@ -50,7 +51,7 @@ public class VeinMineEvents {
             return;
         }
         ItemStack tool = player.getMainHandItem();
-        if (!tool.canPerformAction(ToolActions.PICKAXE_DIG)) {
+        if (!isPickaxeLikeTool(tool, state)) {
             return;
         }
         if (!OreClassifier.isPluckableOre(state)) {
@@ -88,5 +89,15 @@ public class VeinMineEvents {
         double z = pos.getZ() + 0.5;
         serverLevel.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), x, y, z, 28, 0.35, 0.35, 0.35, 0.08);
         serverLevel.sendParticles(ParticleTypes.GLOW, x, y, z, 4, 0.22, 0.22, 0.22, 0.01);
+    }
+
+    private static boolean isPickaxeLikeTool(ItemStack tool, BlockState state) {
+        if (tool.canPerformAction(ToolActions.PICKAXE_DIG)) {
+            return true;
+        }
+        if (tool.isCorrectToolForDrops(state)) {
+            return true;
+        }
+        return state.is(BlockTags.MINEABLE_WITH_PICKAXE) && tool.getDestroySpeed(state) > 1.0F;
     }
 }
