@@ -18,25 +18,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class VeinMineEvents {
 
-    private static final float SHELL_SPEED_MULTIPLIER = 1.8f;
     private static final float PLUCK_DURABILITY_CHANCE = 0.6f;
-
-    @SubscribeEvent
-    public void onBreakSpeed(PlayerEvent.BreakSpeed event) {
-        BlockState state = event.getState();
-        if (state == null) {
-            return;
-        }
-        if (ModBlocks.isShell(state)) {
-            event.setNewSpeed(event.getNewSpeed() * SHELL_SPEED_MULTIPLIER);
-        }
-    }
 
     @SubscribeEvent
     public void onRightClickOre(PlayerInteractEvent.RightClickBlock event) {
