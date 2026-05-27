@@ -56,6 +56,7 @@ public abstract class OreBreakMixin {
                 0.65F
             );
             this.player.sendMessage(Text.literal("Pluck failed").formatted(Formatting.DARK_GRAY), true);
+            spawnFailX(pos);
             return;
         }
 
@@ -109,5 +110,17 @@ public abstract class OreBreakMixin {
 
         cir.setReturnValue(true);
         cir.cancel();
+    }
+
+    private void spawnFailX(BlockPos pos) {
+        double cx = pos.getX() + 0.5;
+        double cy = pos.getY() + 0.62;
+        double cz = pos.getZ() + 0.5;
+        for (int i = -2; i <= 2; i++) {
+            double t = i * 0.045;
+            this.world.spawnParticles(ParticleTypes.GLOW, cx + t, cy + t, cz, 1, 0.0, 0.0, 0.0, 0.0);
+            this.world.spawnParticles(ParticleTypes.GLOW, cx + t, cy - t, cz, 1, 0.0, 0.0, 0.0, 0.0);
+        }
+        this.world.spawnParticles(ParticleTypes.SMOKE, cx, cy, cz, 3, 0.06, 0.04, 0.06, 0.0);
     }
 }
