@@ -48,7 +48,7 @@ public abstract class OreBreakMixin {
             this.world.playSound(
                 null,
                 pos,
-                SoundEvents.BLOCK_NOTE_BLOCK_BASS,
+                SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(),
                 SoundCategory.BLOCKS,
                 0.35F,
                 0.65F
