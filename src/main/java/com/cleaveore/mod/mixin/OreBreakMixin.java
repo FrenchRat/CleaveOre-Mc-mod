@@ -3,12 +3,14 @@ package com.cleaveore.mod.mixin;
 import com.cleaveore.mod.util.OreClassifier;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.ExperienceDroppingBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
@@ -46,7 +48,7 @@ public abstract class OreBreakMixin {
 
         Block shellBlock = OreClassifier.getReplacementShell(state);
         ItemStack tool = this.player.getMainHandStack();
-        if (!tool.isSuitableFor(state)) {
+        if (!canHarvestPluck(tool, state)) {
             this.world.playSound(
                 null,
                 pos,
@@ -122,5 +124,16 @@ public abstract class OreBreakMixin {
             this.world.spawnParticles(ParticleTypes.GLOW, cx + t, cy - t, cz, 1, 0.0, 0.0, 0.0, 0.0);
         }
         this.world.spawnParticles(ParticleTypes.SMOKE, cx, cy, cz, 3, 0.06, 0.04, 0.06, 0.0);
+    }
+
+    private static boolean canHarvestPluck(ItemStack tool, BlockState state) {
+        String path = Registries.BLOCK.getId(state.getBlock()).getPath();
+        if ("ancient_debris".equals(path)) {
+            return tool.isSuitableFor(Blocks.OBSIDIAN.getDefaultState());
+        }
+        if ("nether_gold_ore".equals(path) || "nether_quartz_ore".equals(path)) {
+            return tool.isSuitableFor(Blocks.IRON_ORE.getDefaultState());
+        }
+        return tool.isSuitableFor(state);
     }
 }
