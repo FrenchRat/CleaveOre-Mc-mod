@@ -1,44 +1,39 @@
 # CleaveOre
 
-CleaveOre adds two-stage ore mining.
+CleaveOre is a lightweight mining mod that makes ore collection feel faster and cleaner while keeping normal block mining behavior.
 
-- Left-click mine: vanilla mining behavior.
-- Right-click pluck (with pickaxe-capable tools): pops ore out, leaves a shell block.
+## What It Does
 
-## Supported Releases
+- Left-click mining stays vanilla.
+- Right-clicking an ore with a pickaxe-capable tool plucks the ore out and leaves a shell block behind.
+- Shell cleanup is smooth, so mining flow stays consistent.
+- Visual effects are designed to look good with shader packs and texture packs.
 
-- NeoForge 1.21.1: `v1.1.3-beta-neoforge-1.21.1`\r\n- NeoForge 1.20.1: `v1.1.2-beta-neoforge-1.20.1-compat`
-- Forge 1.20.1: `v1.1.2-beta-forge-1.20.1`
-- Fabric 1.20.1: `v1.1.2-beta-fabric-1.20.1`
+## Supported Versions
+
+- NeoForge 1.21.1 (`v1.1.3-beta-neoforge-1.21.1`)
+- NeoForge 1.20.1 (`v1.1.2-beta-neoforge-1.20.1-compat`)
+- Forge 1.20.1 (`v1.1.2-beta-forge-1.20.1`)
+- Fabric 1.20.1 (`v1.1.2-beta-fabric-1.20.1`)
 
 ## Download
 
-Use the GitHub Releases page:
+Get releases here:
 
-- [Releases](https://github.com/FrenchRat/CleaveOre-Mc-mod/releases)
+- [GitHub Releases](https://github.com/FrenchRat/CleaveOre-Mc-mod/releases)
 
-Pick the release for your loader, then download the `.jar` named like:
+Download the jar that matches your loader and Minecraft version.
 
-- `cleaveore-1.1.2-beta-neoforge-1.20.1-compat.jar`
-- `cleaveore-1.1.2-beta-forge-1.20.1.jar`
-- `cleaveore-1.1.2-beta-fabric-1.20.1.jar`
+## Installation
 
-## Why You Saw "2 Assets"
+1. Install the correct mod loader for your Minecraft version.
+2. Place the matching CleaveOre `.jar` in `.minecraft/mods`.
+3. Start Minecraft with that loader profile.
 
-That was duplicate mod jars in the same release (old filename + new filename). I cleaned those up.
-Now each release keeps one mod `.jar` upload. GitHub may also show auto-generated source archives separately.
+## Notes
 
-## Install
-
-1. Install the correct loader for your Minecraft 1.20.1 setup.
-2. Put the matching CleaveOre `.jar` into `.minecraft/mods`.
-3. Launch the game with that loader profile.
-
-## Build
-
-```powershell
-.\gradlew.bat build
-```
+- Each release includes one main mod `.jar` asset.
+- GitHub may also show source archives (`Source code (zip/tar.gz)`), which are not mod install files.
 
 ## License
 
