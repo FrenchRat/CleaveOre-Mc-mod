@@ -16,6 +16,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
@@ -54,7 +55,7 @@ public abstract class OreBreakMixin {
                 0.35F,
                 0.65F
             );
-            this.player.sendMessage(Text.literal("Pluck failed: pickaxe tier too low"), true);
+            this.player.sendMessage(Text.literal("Pluck failed").formatted(Formatting.DARK_GRAY), true);
             return;
         }
 
