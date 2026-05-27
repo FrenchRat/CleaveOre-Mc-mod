@@ -65,6 +65,7 @@ public class CleaveOreEvents {
             event.setCancellationResult(InteractionResult.SUCCESS);
             serverLevel.playSound(null, pos, SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.BLOCKS, 0.35F, 0.65F);
             serverPlayer.displayClientMessage(Component.literal("Pluck failed").withStyle(ChatFormatting.DARK_GRAY), true);
+            spawnFailX(serverLevel, pos);
             return;
         }
 
@@ -113,6 +114,18 @@ public class CleaveOreEvents {
 
     private static boolean canHarvestOre(ItemStack tool, BlockState state) {
         return tool.isCorrectToolForDrops(state);
+    }
+
+    private static void spawnFailX(ServerLevel level, BlockPos pos) {
+        double cx = pos.getX() + 0.5;
+        double cy = pos.getY() + 0.62;
+        double cz = pos.getZ() + 0.5;
+        for (int i = -2; i <= 2; i++) {
+            double t = i * 0.045;
+            level.sendParticles(ParticleTypes.GLOW, cx + t, cy + t, cz, 1, 0.0, 0.0, 0.0, 0.0);
+            level.sendParticles(ParticleTypes.GLOW, cx + t, cy - t, cz, 1, 0.0, 0.0, 0.0, 0.0);
+        }
+        level.sendParticles(ParticleTypes.SMOKE, cx, cy, cz, 3, 0.06, 0.04, 0.06, 0.0);
     }
 }
 
