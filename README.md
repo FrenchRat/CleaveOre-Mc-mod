@@ -7,7 +7,7 @@ CleaveOre adds two-stage ore mining.
 
 ## Supported Releases
 
-- NeoForge 1.20.1: `v1.1.2-beta-neoforge-1.20.1-compat`
+- NeoForge 1.21.1: `v1.1.3-beta-neoforge-1.21.1`\r\n- NeoForge 1.20.1: `v1.1.2-beta-neoforge-1.20.1-compat`
 - Forge 1.20.1: `v1.1.2-beta-forge-1.20.1`
 - Fabric 1.20.1: `v1.1.2-beta-fabric-1.20.1`
 
