@@ -14,6 +14,7 @@ import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,6 +44,17 @@ public abstract class OreBreakMixin {
 
         Block shellBlock = OreClassifier.getReplacementShell(state);
         ItemStack tool = this.player.getMainHandStack();
+        if (!tool.isSuitableFor(state)) {
+            this.world.playSound(
+                null,
+                pos,
+                SoundEvents.BLOCK_NOTE_BLOCK_BASS,
+                SoundCategory.BLOCKS,
+                0.35F,
+                0.65F
+            );
+            return;
+        }
 
         LootContextParameterSet.Builder lootContext = new LootContextParameterSet.Builder(this.world)
             .add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
