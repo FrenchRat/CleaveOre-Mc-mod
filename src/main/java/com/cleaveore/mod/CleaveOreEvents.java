@@ -4,6 +4,7 @@ import com.cleaveore.mod.registry.ModBlocks;
 import com.cleaveore.mod.util.OreClassifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -18,6 +19,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.ChatFormatting;
@@ -113,6 +115,13 @@ public class CleaveOreEvents {
     }
 
     private static boolean canHarvestOre(ItemStack tool, BlockState state) {
+        String path = BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath();
+        if ("ancient_debris".equals(path)) {
+            return tool.isCorrectToolForDrops(Blocks.OBSIDIAN.defaultBlockState());
+        }
+        if ("nether_gold_ore".equals(path) || "nether_quartz_ore".equals(path)) {
+            return tool.isCorrectToolForDrops(Blocks.IRON_ORE.defaultBlockState());
+        }
         return tool.isCorrectToolForDrops(state);
     }
 
