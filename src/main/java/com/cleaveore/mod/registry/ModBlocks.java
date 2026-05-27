@@ -30,7 +30,6 @@ public final class ModBlocks {
             BlockBehaviour.Properties.copy(baseBlock)
                 .strength(destroyTime, explosionResistance)
                 .requiresCorrectToolForDrops()
-                .noLootTable()
         ));
         ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
         return block;
