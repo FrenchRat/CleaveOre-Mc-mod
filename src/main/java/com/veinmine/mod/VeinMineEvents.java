@@ -10,6 +10,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -57,6 +58,12 @@ public class VeinMineEvents {
         if (!OreClassifier.isPluckableOre(state)) {
             return;
         }
+        if (!canHarvestOre(tool, state)) {
+            event.setCanceled(true);
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            serverLevel.playSound(null, pos, SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.BLOCKS, 0.35F, 0.65F);
+            return;
+        }
 
         Block replacement = ModBlocks.getShellFor(state);
 
@@ -99,5 +106,9 @@ public class VeinMineEvents {
             return true;
         }
         return state.is(BlockTags.MINEABLE_WITH_PICKAXE) && tool.getDestroySpeed(state) > 1.0F;
+    }
+
+    private static boolean canHarvestOre(ItemStack tool, BlockState state) {
+        return tool.isCorrectToolForDrops(state);
     }
 }
