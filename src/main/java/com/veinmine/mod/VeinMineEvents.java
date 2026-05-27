@@ -61,7 +61,7 @@ public class VeinMineEvents {
         if (!canHarvestOre(tool, state)) {
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.SUCCESS);
-            serverLevel.playSound(null, pos, SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 0.35F, 0.65F);
+            serverLevel.playSound(null, pos, SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.BLOCKS, 0.35F, 0.65F);
             return;
         }
 
