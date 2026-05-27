@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.cleaveore.mod.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "OreBreakMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

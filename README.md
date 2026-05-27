@@ -1,11 +1,11 @@
-# VeinMine — Two-Stage Ore Mining Mod
+# CleaveOre — Two-Stage Ore Mining Mod
 ### Fabric · Minecraft 1.20.4 · Java 17
 
 ---
 
 ## What Does This Mod Do?
 
-VeinMine changes the fundamental feel of ore mining by splitting it into two distinct stages:
+CleaveOre changes the fundamental feel of ore mining by splitting it into two distinct stages:
 
 **Stage 1 — Pop the ore (fast):** When you mine any ore block, instead of the block disappearing, the ore "pops out" of the stone — the gems, ingots or dust drop immediately, and the block is replaced by a **hollow stone shell**. This first hit is roughly 6× faster than mining the full block normally. You hear a satisfying high-pitched crack, and a burst of soft glowing particles erupts from the face you mined.
 
@@ -56,7 +56,7 @@ You need **Java 17** and **Gradle** (the wrapper is included). No other tools ar
 
 ```bash
 # Clone or unzip this project, then:
-cd veinmine
+cd cleaveore
 
 # Download Minecraft assets and generate Yarn mappings (first run takes a few minutes)
 ./gradlew genSources
@@ -67,7 +67,7 @@ cd veinmine
 
 The compiled `.jar` will be at:
 ```
-build/libs/veinmine-1.0.0.jar
+build/libs/cleaveore-1.0.0.jar
 ```
 
 ---
@@ -76,7 +76,7 @@ build/libs/veinmine-1.0.0.jar
 
 1. Install [Fabric Loader](https://fabricmc.net/use/) for Minecraft 1.20.4.
 2. Download [Fabric API](https://modrinth.com/mod/fabric-api) (version 0.96.4+ for 1.20.4).
-3. Drop both `fabric-api-*.jar` and `veinmine-1.0.0.jar` into your `.minecraft/mods/` folder.
+3. Drop both `fabric-api-*.jar` and `cleaveore-1.0.0.jar` into your `.minecraft/mods/` folder.
 4. Launch Minecraft with the Fabric profile. Done!
 
 ### Optional but Recommended
@@ -102,7 +102,7 @@ To support a modded ore (e.g. from Thermal Foundation or Create), you need to:
 
 1. Register a new shell block in `ModBlocks.java`.
 2. Add an entry to the `ORE_SHELL_MAP` or add an `instanceof` check in `getShellFor()` inside `OreBreakMixin.java`.
-3. Add blockstate, block model, item model, and lang JSON files (follow the existing pattern in `resources/assets/veinmine/`).
+3. Add blockstate, block model, item model, and lang JSON files (follow the existing pattern in `resources/assets/cleaveore/`).
 
 Since `getShellFor()` walks the class hierarchy, any modded ore that *extends* a vanilla ore class (e.g. `class MyGoldOre extends GoldOreBlock`) will automatically be caught by the existing mappings.
 
@@ -111,9 +111,9 @@ Since `getShellFor()` walks the class hierarchy, any modded ore that *extends* a
 ## Project Structure
 
 ```
-src/main/java/com/veinmine/mod/
-├── VeinMineMod.java          ← Server entrypoint, calls all registries
-├── VeinMineModClient.java    ← Client entrypoint, registers particle factory
+src/main/java/com/cleaveore/mod/
+├── CleaveOreMod.java          ← Server entrypoint, calls all registries
+├── CleaveOreModClient.java    ← Client entrypoint, registers particle factory
 ├── block/
 │   └── HollowOreShellBlock.java    ← The empty shell block (drops nothing)
 ├── mixin/

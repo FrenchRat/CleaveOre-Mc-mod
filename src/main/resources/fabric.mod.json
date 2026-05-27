@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "id": "veinmine",
+  "id": "cleaveore",
   "version": "${version}",
   "name": "CleaveOre",
   "description": "Ore blocks crack open and eject the ore, leaving behind a hollow shell you can mine afterward. Lightweight and Modrinth modpack ready.",
   "authors": ["Ethan Drake", "ChatGPT"],
   "contact": {},
   "license": "MIT",
-  "icon": "assets/veinmine/icon.png",
+  "icon": "assets/cleaveore/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": ["com.veinmine.mod.VeinMineMod"],
-    "client": ["com.veinmine.mod.VeinMineModClient"]
+    "main": ["com.cleaveore.mod.CleaveOreMod"],
+    "client": ["com.cleaveore.mod.CleaveOreModClient"]
   },
   "mixins": [
-    "veinmine.mixins.json",
-    "veinmine.client.mixins.json"
+    "cleaveore.mixins.json",
+    "cleaveore.client.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.16.12",
