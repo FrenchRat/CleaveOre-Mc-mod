@@ -1,0 +1,28 @@
+{
+  "key.categories.cleaveore": "CleaveOre",
+  "key.cleaveore.ore_pluck": "Ore Pluck (Use Item)",
+  "block.cleaveore.hollow_stone_shell": "Hollow Stone Shell",
+  "block.cleaveore.hollow_deepslate_shell": "Hollow Deepslate Shell",
+  "block.cleaveore.hollow_nether_shell": "Hollow Nether Shell",
+  "block.cleaveore.hollow_coal_shell":     "Hollow Coal Shell",
+  "block.cleaveore.hollow_iron_shell":     "Hollow Iron Shell",
+  "block.cleaveore.hollow_gold_shell":     "Hollow Gold Shell",
+  "block.cleaveore.hollow_diamond_shell":  "Hollow Diamond Shell",
+  "block.cleaveore.hollow_emerald_shell":  "Hollow Emerald Shell",
+  "block.cleaveore.hollow_lapis_shell":    "Hollow Lapis Shell",
+  "block.cleaveore.hollow_redstone_shell": "Hollow Redstone Shell",
+  "block.cleaveore.hollow_copper_shell":   "Hollow Copper Shell",
+
+  "block.cleaveore.hollow_deepslate_coal_shell":     "Hollow Deepslate Coal Shell",
+  "block.cleaveore.hollow_deepslate_iron_shell":     "Hollow Deepslate Iron Shell",
+  "block.cleaveore.hollow_deepslate_gold_shell":     "Hollow Deepslate Gold Shell",
+  "block.cleaveore.hollow_deepslate_diamond_shell":  "Hollow Deepslate Diamond Shell",
+  "block.cleaveore.hollow_deepslate_emerald_shell":  "Hollow Deepslate Emerald Shell",
+  "block.cleaveore.hollow_deepslate_lapis_shell":    "Hollow Deepslate Lapis Shell",
+  "block.cleaveore.hollow_deepslate_redstone_shell": "Hollow Deepslate Redstone Shell",
+  "block.cleaveore.hollow_deepslate_copper_shell":   "Hollow Deepslate Copper Shell",
+
+  "block.cleaveore.hollow_nether_gold_shell":    "Hollow Nether Gold Shell",
+  "block.cleaveore.hollow_nether_quartz_shell":  "Hollow Nether Quartz Shell",
+  "block.cleaveore.hollow_ancient_debris_shell": "Hollow Ancient Debris Shell"
+}
