@@ -30,7 +30,6 @@ public final class ModBlocks {
             BlockBehaviour.Properties.ofFullCopy(baseBlock)
                 .strength(destroyTime, explosionResistance)
                 .requiresCorrectToolForDrops()
-                .noLootTable()
         ));
         DeferredItem<BlockItem> item = ITEMS.registerSimpleBlockItem(name, block, new Item.Properties());
         return block;
