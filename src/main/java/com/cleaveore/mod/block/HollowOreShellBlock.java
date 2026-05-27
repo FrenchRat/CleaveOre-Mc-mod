@@ -2,25 +2,18 @@ package com.cleaveore.mod.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.registry.Registries;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
- * HollowOreShellBlock is the block left behind after stage-1 ore extraction.
+ * Shell block left behind after ore pluck.
  *
- * It looks like plain stone or deepslate (using vanilla textures defined in
- * resources/assets/cleaveore/models/block/), mines at normal stone/deepslate
- * speed, and drops NOTHING — because the ore items already dropped in stage 1.
- *
- * Key design decisions:
- *   - No double-drops: the loot already came out during stage 1.
- *   - Fortune and Silk Touch have no effect (nothing left inside to enchant).
- *   - No XP drops: XP was already awarded in stage 1.
- *   - requiresTool() is inherited from settings, so you still need a pickaxe
- *     to clear the shell (can't punch it away, which would feel cheaty).
+ * These mine like stone/deepslate and drop a base building block so cleanup
+ * after pluck still rewards normal mining.
  */
 public class HollowOreShellBlock extends Block {
 
@@ -31,17 +24,19 @@ public class HollowOreShellBlock extends Block {
         this.isDeepslate = isDeepslate;
     }
 
-    /**
-     * Returns an empty drop list so the shell gives the player nothing when mined.
-     *
-     * In 1.20.4, Block.getDroppedStacks() takes a LootContextParameterSet.Builder
-     * (not a built LootContextParameterSet). The Builder pattern here lets vanilla
-     * add additional context (like block entity data) before building. Since we
-     * return early with an empty list, the builder is never actually used.
-     */
     @Override
     public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
-        return Collections.emptyList();
+        String path = Registries.BLOCK.getId(state.getBlock()).getPath();
+        if (path.contains("ancient_debris")) {
+            return List.of(new ItemStack(Blocks.ANCIENT_DEBRIS));
+        }
+        if (path.contains("nether")) {
+            return List.of(new ItemStack(Blocks.NETHERRACK));
+        }
+        if (isDeepslate) {
+            return List.of(new ItemStack(Blocks.COBBLED_DEEPSLATE));
+        }
+        return List.of(new ItemStack(Blocks.COBBLESTONE));
     }
 
     public boolean isDeepslate() {

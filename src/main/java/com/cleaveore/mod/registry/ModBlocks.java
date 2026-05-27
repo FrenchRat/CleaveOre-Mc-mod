@@ -15,8 +15,8 @@ import net.minecraft.util.Identifier;
  * ModBlocks registers every "hollow shell" variant — one per ore type.
  *
  * Each shell block is just stone that looks like it had the ore ripped out of it.
- * It mines at normal stone speed, drops nothing (the ore already dropped in stage 1),
- * and has no special properties beyond being a regular full block.
+ * It mines at normal stone speed, drops a base block, and has no special
+ * properties beyond being a regular full block.
  *
  * We copy settings from vanilla stone so hardness, blast resistance, and tool
  * requirements all match stone exactly.
