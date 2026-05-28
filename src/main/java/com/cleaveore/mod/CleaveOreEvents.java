@@ -2,18 +2,19 @@ package com.cleaveore.mod;
 
 import com.cleaveore.mod.registry.ModBlocks;
 import com.cleaveore.mod.util.OreClassifier;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -25,11 +26,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraft.ChatFormatting;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class CleaveOreEvents {
 
-    private static final float PLUCK_DURABILITY_CHANCE = 0.6f;
+    private static final Map<UUID, Long> FAIL_COOLDOWN = new HashMap<>();
 
     @SubscribeEvent
     public void onRightClickOre(PlayerInteractEvent.RightClickBlock event) {
@@ -40,12 +44,12 @@ public class CleaveOreEvents {
         if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
             return;
         }
+
         BlockPos pos = event.getPos();
         BlockState state = serverLevel.getBlockState(pos);
         boolean hasMainPickaxe = isPickaxeLikeTool(player.getMainHandItem(), state);
         boolean targetIsOre = OreClassifier.isPluckableOre(state);
 
-        // Prevent offhand placements/uses (shield, lantern, etc.) while pluck conditions are met.
         if (event.getHand() == InteractionHand.OFF_HAND && hasMainPickaxe && targetIsOre) {
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.SUCCESS);
@@ -55,27 +59,20 @@ public class CleaveOreEvents {
         if (event.getHand() != InteractionHand.MAIN_HAND) {
             return;
         }
+
         ItemStack tool = player.getMainHandItem();
         if (!isPickaxeLikeTool(tool, state)) {
             return;
         }
-        if (isAncientDebris(state)) {
-            event.setCanceled(true);
-            event.setCancellationResult(InteractionResult.SUCCESS);
-            serverLevel.playSound(null, pos, SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.BLOCKS, 0.35F, 0.65F);
-            serverPlayer.displayClientMessage(Component.literal("Pluck failed").withStyle(ChatFormatting.DARK_GRAY), true);
-            spawnFailX(serverLevel, pos);
+        if (isAncientDebris(state) && !CleaveOreConfig.get().allowAncientDebrisPluck) {
+            failFeedback(serverPlayer, serverLevel, pos);
             return;
         }
         if (!OreClassifier.isPluckableOre(state)) {
             return;
         }
         if (!canHarvestOre(tool, state)) {
-            event.setCanceled(true);
-            event.setCancellationResult(InteractionResult.SUCCESS);
-            serverLevel.playSound(null, pos, SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.BLOCKS, 0.35F, 0.65F);
-            serverPlayer.displayClientMessage(Component.literal("Pluck failed").withStyle(ChatFormatting.DARK_GRAY), true);
-            spawnFailX(serverLevel, pos);
+            failFeedback(serverPlayer, serverLevel, pos);
             return;
         }
 
@@ -89,7 +86,7 @@ public class CleaveOreEvents {
             Block.popResourceFromFace(serverLevel, pos, face, drop);
         }
         state.spawnAfterBreak(serverLevel, pos, tool, true);
-        if (!tool.isEmpty() && serverLevel.random.nextFloat() < PLUCK_DURABILITY_CHANCE) {
+        if (!tool.isEmpty() && serverLevel.random.nextDouble() < CleaveOreConfig.get().pluckDurabilityChance) {
             tool.hurtAndBreak(1, serverPlayer, p -> p.broadcastBreakEvent(EquipmentSlot.MAINHAND));
         }
 
@@ -102,7 +99,7 @@ public class CleaveOreEvents {
             sounds.getBreakSound(),
             SoundSource.BLOCKS,
             (sounds.getVolume() + 1.0F) / 2.0F,
-            sounds.getPitch() * 1.18F
+            getSuccessPitch(state, sounds.getPitch())
         );
 
         double x = pos.getX() + 0.5;
@@ -134,15 +131,48 @@ public class CleaveOreEvents {
         return "ancient_debris".equals(BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath());
     }
 
+    private static float getSuccessPitch(BlockState state, float basePitch) {
+        String path = BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath();
+        if (path.contains("diamond") || path.contains("emerald")) {
+            return basePitch * 1.22F;
+        }
+        if (path.contains("gold") || path.contains("quartz")) {
+            return basePitch * 1.2F;
+        }
+        if (path.contains("redstone") || path.contains("copper")) {
+            return basePitch * 1.16F;
+        }
+        return basePitch * 1.18F;
+    }
+
+    private static void failFeedback(ServerPlayer serverPlayer, ServerLevel serverLevel, BlockPos pos) {
+        long now = serverLevel.getGameTime();
+        int cooldown = Math.max(0, CleaveOreConfig.get().failCooldownTicks);
+        long last = FAIL_COOLDOWN.getOrDefault(serverPlayer.getUUID(), Long.MIN_VALUE / 2);
+        if (now - last < cooldown) {
+            return;
+        }
+        FAIL_COOLDOWN.put(serverPlayer.getUUID(), now);
+
+        serverLevel.playSound(null, pos, SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.BLOCKS, 0.35F, 0.65F);
+        if (CleaveOreConfig.get().showFailActionBar) {
+            serverPlayer.displayClientMessage(Component.literal("Pluck failed").withStyle(ChatFormatting.DARK_GRAY), true);
+        }
+        if (CleaveOreConfig.get().showFailXParticles) {
+            spawnFailX(serverLevel, pos);
+        }
+    }
+
     private static void spawnFailX(ServerLevel level, BlockPos pos) {
+        double scale = Math.max(0.2, CleaveOreConfig.get().failParticleScale);
         double cx = pos.getX() + 0.5;
         double cy = pos.getY() + 0.62;
         double cz = pos.getZ() + 0.5;
         for (int i = -2; i <= 2; i++) {
-            double t = i * 0.045;
+            double t = i * 0.045 * scale;
             level.sendParticles(ParticleTypes.GLOW, cx + t, cy + t, cz, 1, 0.0, 0.0, 0.0, 0.0);
             level.sendParticles(ParticleTypes.GLOW, cx + t, cy - t, cz, 1, 0.0, 0.0, 0.0, 0.0);
         }
-        level.sendParticles(ParticleTypes.SMOKE, cx, cy, cz, 3, 0.06, 0.04, 0.06, 0.0);
+        level.sendParticles(ParticleTypes.SMOKE, cx, cy, cz, 3, 0.06 * scale, 0.04 * scale, 0.06 * scale, 0.0);
     }
 }
