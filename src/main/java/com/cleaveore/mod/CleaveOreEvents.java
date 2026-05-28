@@ -37,7 +37,6 @@ import java.util.UUID;
 public class CleaveOreEvents {
 
     private static final Map<UUID, Long> FAIL_COOLDOWN = new HashMap<>();
-    private static final Map<PluckedPos, Block> PLUCKED_HOSTS = new HashMap<>();
     private static final Map<PluckedPos, Long> RECENT_PLUCK_TICKS = new HashMap<>();
 
     @SubscribeEvent
@@ -108,7 +107,6 @@ public class CleaveOreEvents {
         }
 
         serverLevel.setBlock(pos, replacementState, Block.UPDATE_ALL);
-        PLUCKED_HOSTS.put(pluckedKey, replacementState.getBlock());
         RECENT_PLUCK_TICKS.put(pluckedKey, now);
 
         SoundType sounds = state.getSoundType();
@@ -213,63 +211,6 @@ public class CleaveOreEvents {
     private static void denyFurtherUse(PlayerInteractEvent.RightClickBlock event) {
         event.setUseItem(Event.Result.DENY);
         event.setUseBlock(Event.Result.DENY);
-    }
-
-    @SubscribeEvent
-    public void onBreakPluckedHost(BlockEvent.BreakEvent event) {
-        if (!(event.getPlayer() instanceof ServerPlayer serverPlayer)) {
-            return;
-        }
-        if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
-            return;
-        }
-
-        BlockPos pos = event.getPos();
-        BlockState state = serverLevel.getBlockState(pos);
-        PluckedPos key = new PluckedPos(serverLevel.dimension().location().toString(), pos.asLong());
-        Block expected = PLUCKED_HOSTS.get(key);
-        if (expected == null || state.getBlock() != expected) {
-            return;
-        }
-
-        PLUCKED_HOSTS.remove(key);
-        event.setCanceled(true);
-
-        ItemStack tool = serverPlayer.getMainHandItem();
-        if (!serverPlayer.isCreative() && !tool.isEmpty()) {
-            tool.mineBlock(serverLevel, state, pos, serverPlayer);
-        }
-
-        if (tool.isCorrectToolForDrops(state)) {
-            Item asItem = state.getBlock().asItem();
-            if (asItem != Item.byBlock(Blocks.AIR)) {
-                Block.popResource(serverLevel, pos, new ItemStack(asItem));
-            }
-        }
-
-        SoundType sounds = state.getSoundType();
-        serverLevel.playSound(
-            null,
-            pos,
-            sounds.getBreakSound(),
-            SoundSource.BLOCKS,
-            (sounds.getVolume() + 1.0F) / 2.0F,
-            sounds.getPitch()
-        );
-
-        serverLevel.sendParticles(
-            new BlockParticleOption(ParticleTypes.BLOCK, state),
-            pos.getX() + 0.5,
-            pos.getY() + 0.5,
-            pos.getZ() + 0.5,
-            14,
-            0.2,
-            0.2,
-            0.2,
-            0.05
-        );
-
-        serverLevel.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
     }
 
     private record PluckedPos(String dimensionKey, long packedPos) {
