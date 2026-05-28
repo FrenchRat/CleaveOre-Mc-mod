@@ -1,6 +1,3 @@
 {
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "minecraft:block/stone"
-  }
+  "parent": "cleaveore:block/hollow_stone_shell"
 }
