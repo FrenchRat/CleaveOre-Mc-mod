@@ -199,9 +199,22 @@ public class CleaveOreEvents {
         } else {
             side = side.normalize();
         }
+        Vec3 up = new Vec3(0.0, 1.0, 0.0);
+        Vec3 side2 = towardPlayer.cross(side);
+        if (side2.lengthSqr() < 1.0E-6) {
+            side2 = up;
+        } else {
+            side2 = side2.normalize();
+        }
 
-        // Keep X near the edge of the face so it stays visible but out of direct crosshair view.
-        Vec3 facePoint = center.add(towardPlayer.scale(0.29)).add(side.scale(0.17)).add(0.0, 0.08, 0.0);
+        // Randomize X position across the visible face while keeping it near the surface.
+        double randSideA = (level.random.nextDouble() - 0.5) * 0.34;
+        double randSideB = (level.random.nextDouble() - 0.5) * 0.34;
+        Vec3 facePoint = center
+            .add(towardPlayer.scale(0.29))
+            .add(side.scale(randSideA))
+            .add(side2.scale(randSideB))
+            .add(0.0, 0.03, 0.0);
         DustParticleOptions red = new DustParticleOptions(new Vector3f(0.95F, 0.12F, 0.12F), 0.40F);
         for (int i = -1; i <= 1; i++) {
             double t = i * 0.028 * scale;
