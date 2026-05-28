@@ -169,10 +169,9 @@ public class CleaveOreEvents {
         double cy = pos.getY() + 0.62;
         double cz = pos.getZ() + 0.5;
         for (int i = -2; i <= 2; i++) {
-            double t = i * 0.045 * scale;
+            double t = i * 0.035 * scale;
             level.sendParticles(ParticleTypes.GLOW, cx + t, cy + t, cz, 1, 0.0, 0.0, 0.0, 0.0);
             level.sendParticles(ParticleTypes.GLOW, cx + t, cy - t, cz, 1, 0.0, 0.0, 0.0, 0.0);
         }
-        level.sendParticles(ParticleTypes.SMOKE, cx, cy, cz, 3, 0.06 * scale, 0.04 * scale, 0.06 * scale, 0.0);
     }
 }
