@@ -21,14 +21,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.item.Item;
 import net.minecraft.ChatFormatting;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +34,6 @@ import java.util.UUID;
 public class CleaveOreEvents {
 
     private static final Map<UUID, Long> FAIL_COOLDOWN = new HashMap<>();
-    private static final Map<PluckedPos, Block> PLUCKED_HOSTS = new HashMap<>();
     private static final Map<PluckedPos, Long> RECENT_PLUCK_TICKS = new HashMap<>();
 
     @SubscribeEvent
@@ -106,7 +102,6 @@ public class CleaveOreEvents {
         }
 
         serverLevel.setBlock(pos, replacementState, Block.UPDATE_ALL);
-        PLUCKED_HOSTS.put(pluckedKey, replacementState.getBlock());
         RECENT_PLUCK_TICKS.put(pluckedKey, now);
 
         SoundType sounds = state.getSoundType();
@@ -211,65 +206,6 @@ public class CleaveOreEvents {
     private static void denyFurtherUse(PlayerInteractEvent.RightClickBlock event) {
         event.setUseItem(TriState.FALSE);
         event.setUseBlock(TriState.FALSE);
-    }
-
-    @SubscribeEvent
-    public void onBreakPluckedHost(BlockEvent.BreakEvent event) {
-        if (!(event.getPlayer() instanceof ServerPlayer serverPlayer)) {
-            return;
-        }
-        if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
-            return;
-        }
-
-        BlockPos pos = event.getPos();
-        BlockState state = serverLevel.getBlockState(pos);
-        PluckedPos key = new PluckedPos(serverLevel.dimension().location().toString(), pos.asLong());
-        Block expected = PLUCKED_HOSTS.get(key);
-        if (expected == null || state.getBlock() != expected) {
-            return;
-        }
-
-        // Clear marker first so we never duplicate this special-case handling.
-        PLUCKED_HOSTS.remove(key);
-
-        event.setCanceled(true);
-
-        ItemStack tool = serverPlayer.getMainHandItem();
-        if (!serverPlayer.isCreative() && !tool.isEmpty()) {
-            tool.mineBlock(serverLevel, state, pos, serverPlayer);
-        }
-
-        if (tool.isCorrectToolForDrops(state)) {
-            Item asItem = state.getBlock().asItem();
-            if (asItem != Item.byBlock(Blocks.AIR)) {
-                Block.popResource(serverLevel, pos, new ItemStack(asItem));
-            }
-        }
-
-        SoundType sounds = state.getSoundType();
-        serverLevel.playSound(
-            null,
-            pos,
-            sounds.getBreakSound(),
-            SoundSource.BLOCKS,
-            (sounds.getVolume() + 1.0F) / 2.0F,
-            sounds.getPitch()
-        );
-
-        serverLevel.sendParticles(
-            new BlockParticleOption(ParticleTypes.BLOCK, state),
-            pos.getX() + 0.5,
-            pos.getY() + 0.5,
-            pos.getZ() + 0.5,
-            14,
-            0.2,
-            0.2,
-            0.2,
-            0.05
-        );
-
-        serverLevel.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
     }
 
     private record PluckedPos(String dimensionKey, long packedPos) {
