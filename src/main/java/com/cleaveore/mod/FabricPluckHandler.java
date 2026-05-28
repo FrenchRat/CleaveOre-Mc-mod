@@ -38,17 +38,34 @@ public final class FabricPluckHandler {
 
     public static void register() {
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            if (world.isClient() || !(world instanceof ServerWorld serverWorld) || !(player instanceof ServerPlayerEntity serverPlayer)) {
+            BlockPos pos = hitResult.getBlockPos();
+            BlockState state = world.getBlockState(pos);
+
+            // Fabric quirk: returning SUCCESS on client guarantees the use-block packet is sent.
+            // Without this, right-click on inert blocks can appear as "nothing happens".
+            if (world.isClient()) {
+                if (hand != Hand.MAIN_HAND) {
+                    return ActionResult.PASS;
+                }
+                ItemStack clientTool = player.getMainHandStack();
+                if (!isPickaxeLikeTool(clientTool, state)) {
+                    return ActionResult.PASS;
+                }
+                if (OreClassifier.isPluckableOre(state) || isAncientDebris(state)) {
+                    return ActionResult.SUCCESS;
+                }
+                return ActionResult.PASS;
+            }
+
+            if (!(world instanceof ServerWorld serverWorld) || !(player instanceof ServerPlayerEntity serverPlayer)) {
                 return ActionResult.PASS;
             }
             if (player.isCreative()) {
                 return ActionResult.PASS;
             }
 
-            BlockPos pos = hitResult.getBlockPos();
             PluckedPos key = new PluckedPos(serverWorld.getRegistryKey().getValue().toString(), pos.asLong());
             long now = serverWorld.getTime();
-            BlockState state = serverWorld.getBlockState(pos);
             boolean hasMainPickaxe = isPickaxeLikeTool(player.getMainHandStack(), state);
             boolean targetIsOre = OreClassifier.isPluckableOre(state);
             boolean justPluckedHere = now - RECENT_PLUCK_TICKS.getOrDefault(key, Long.MIN_VALUE / 2) <= 2;
