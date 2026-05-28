@@ -20,7 +20,7 @@ public final class OreClassifier {
         String path = id.getPath();
 
         if (block == Blocks.ANCIENT_DEBRIS) {
-            return true;
+            return false;
         }
         if (block instanceof ExperienceDroppingBlock) {
             return true;
