@@ -1,4 +1,4 @@
 ﻿{
   "parent": "minecraft:block/cube_all",
-  "textures": { "all": "minecraft:block/deepslate" }
+  "textures": { "all": "minecraft:block/cobbled_deepslate" }
 }
