@@ -1,11 +1,12 @@
 package com.cleaveore.mod;
 
-import com.cleaveore.mod.registry.ModBlocks;
 import com.cleaveore.mod.util.OreClassifier;
+import org.joml.Vector3f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -18,13 +19,17 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.HashMap;
@@ -34,6 +39,7 @@ import java.util.UUID;
 public class CleaveOreEvents {
 
     private static final Map<UUID, Long> FAIL_COOLDOWN = new HashMap<>();
+    private static final Map<PluckedPos, Block> PLUCKED_HOSTS = new HashMap<>();
 
     @SubscribeEvent
     public void onRightClickOre(PlayerInteractEvent.RightClickBlock event) {
@@ -76,7 +82,7 @@ public class CleaveOreEvents {
             return;
         }
 
-        Block replacement = ModBlocks.getShellFor(state);
+        Block replacement = getHostBlockFor(state);
 
         event.setCanceled(true);
         event.setCancellationResult(InteractionResult.SUCCESS);
@@ -91,6 +97,7 @@ public class CleaveOreEvents {
         }
 
         serverLevel.setBlock(pos, replacement.defaultBlockState(), Block.UPDATE_ALL);
+        PLUCKED_HOSTS.put(new PluckedPos(serverLevel.dimension().location().toString(), pos.asLong()), replacement);
 
         SoundType sounds = state.getSoundType();
         serverLevel.playSound(
@@ -131,6 +138,26 @@ public class CleaveOreEvents {
         return "ancient_debris".equals(BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath());
     }
 
+    private static Block getHostBlockFor(BlockState state) {
+        String path = BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath();
+        if (path.contains("deepslate")) {
+            return Blocks.DEEPSLATE;
+        }
+        if (path.contains("stone")) {
+            return Blocks.STONE;
+        }
+        if (path.contains("nether") || path.contains("netherrack")) {
+            return Blocks.NETHERRACK;
+        }
+        if (path.contains("blackstone")) {
+            return Blocks.BLACKSTONE;
+        }
+        if (path.contains("end") || path.contains("endstone")) {
+            return Blocks.END_STONE;
+        }
+        return Blocks.STONE;
+    }
+
     private static float getSuccessPitch(BlockState state, float basePitch) {
         String path = BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath();
         if (path.contains("diamond") || path.contains("emerald")) {
@@ -156,22 +183,104 @@ public class CleaveOreEvents {
 
         serverLevel.playSound(null, pos, SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.BLOCKS, 0.35F, 0.65F);
         if (CleaveOreConfig.get().showFailActionBar) {
-            serverPlayer.displayClientMessage(Component.literal("Pluck failed").withStyle(ChatFormatting.DARK_GRAY), true);
+            serverPlayer.displayClientMessage(Component.literal("failed").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC), true);
         }
         if (CleaveOreConfig.get().showFailXParticles) {
-            spawnFailX(serverLevel, pos);
+            spawnFailX(serverLevel, pos, serverPlayer);
         }
     }
 
-    private static void spawnFailX(ServerLevel level, BlockPos pos) {
+    private static void spawnFailX(ServerLevel level, BlockPos pos, ServerPlayer player) {
         double scale = Math.max(0.2, CleaveOreConfig.get().failParticleScale);
-        double cx = pos.getX() + 0.5;
-        double cy = pos.getY() + 0.62;
-        double cz = pos.getZ() + 0.5;
-        for (int i = -2; i <= 2; i++) {
-            double t = i * 0.035 * scale;
-            level.sendParticles(ParticleTypes.GLOW, cx + t, cy + t, cz, 1, 0.0, 0.0, 0.0, 0.0);
-            level.sendParticles(ParticleTypes.GLOW, cx + t, cy - t, cz, 1, 0.0, 0.0, 0.0, 0.0);
+        Vec3 center = new Vec3(pos.getX() + 0.5, pos.getY() + 0.62, pos.getZ() + 0.5);
+        Vec3 towardPlayer = player.getEyePosition().subtract(center).normalize();
+        Vec3 side = towardPlayer.cross(new Vec3(0.0, 1.0, 0.0));
+        if (side.lengthSqr() < 1.0E-6) {
+            side = new Vec3(1.0, 0.0, 0.0);
+        } else {
+            side = side.normalize();
         }
+        Vec3 up = new Vec3(0.0, 1.0, 0.0);
+        Vec3 side2 = towardPlayer.cross(side);
+        if (side2.lengthSqr() < 1.0E-6) {
+            side2 = up;
+        } else {
+            side2 = side2.normalize();
+        }
+
+        double randSideA = (level.random.nextDouble() - 0.5) * 0.34;
+        double randSideB = (level.random.nextDouble() - 0.5) * 0.34;
+        Vec3 facePoint = center
+            .add(towardPlayer.scale(0.29))
+            .add(side.scale(randSideA))
+            .add(side2.scale(randSideB))
+            .add(0.0, 0.03, 0.0);
+        Vec3 flow = towardPlayer.scale(0.010).add(side.scale((level.random.nextDouble() - 0.5) * 0.004));
+        DustParticleOptions red = new DustParticleOptions(new Vector3f(0.95F, 0.12F, 0.12F), 0.40F);
+        for (int i = -1; i <= 1; i++) {
+            double t = i * 0.028 * scale;
+            level.sendParticles(red, facePoint.x + t, facePoint.y + t, facePoint.z, 1, flow.x, flow.y, flow.z, 0.0);
+            level.sendParticles(red, facePoint.x + t, facePoint.y - t, facePoint.z, 1, flow.x, flow.y, flow.z, 0.0);
+        }
+    }
+
+    @SubscribeEvent
+    public void onBreakPluckedHost(BlockEvent.BreakEvent event) {
+        if (!(event.getPlayer() instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+        if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        BlockPos pos = event.getPos();
+        BlockState state = serverLevel.getBlockState(pos);
+        PluckedPos key = new PluckedPos(serverLevel.dimension().location().toString(), pos.asLong());
+        Block expected = PLUCKED_HOSTS.get(key);
+        if (expected == null || state.getBlock() != expected) {
+            return;
+        }
+
+        PLUCKED_HOSTS.remove(key);
+        event.setCanceled(true);
+
+        ItemStack tool = serverPlayer.getMainHandItem();
+        if (!serverPlayer.isCreative() && !tool.isEmpty()) {
+            tool.mineBlock(serverLevel, state, pos, serverPlayer);
+        }
+
+        if (tool.isCorrectToolForDrops(state)) {
+            Item asItem = state.getBlock().asItem();
+            if (asItem != Item.byBlock(Blocks.AIR)) {
+                Block.popResource(serverLevel, pos, new ItemStack(asItem));
+            }
+        }
+
+        SoundType sounds = state.getSoundType();
+        serverLevel.playSound(
+            null,
+            pos,
+            sounds.getBreakSound(),
+            SoundSource.BLOCKS,
+            (sounds.getVolume() + 1.0F) / 2.0F,
+            sounds.getPitch()
+        );
+
+        serverLevel.sendParticles(
+            new BlockParticleOption(ParticleTypes.BLOCK, state),
+            pos.getX() + 0.5,
+            pos.getY() + 0.5,
+            pos.getZ() + 0.5,
+            14,
+            0.2,
+            0.2,
+            0.2,
+            0.05
+        );
+
+        serverLevel.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+    }
+
+    private record PluckedPos(String dimensionKey, long packedPos) {
     }
 }
