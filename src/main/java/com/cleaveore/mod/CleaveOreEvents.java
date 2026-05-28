@@ -38,6 +38,7 @@ public class CleaveOreEvents {
 
     private static final Map<UUID, Long> FAIL_COOLDOWN = new HashMap<>();
     private static final Map<PluckedPos, Long> RECENT_PLUCK_TICKS = new HashMap<>();
+    private static final Map<PluckedPos, BlockState> PLUCKED_HOST_STATES = new HashMap<>();
 
     @SubscribeEvent
     public void onRightClickOre(PlayerInteractEvent.RightClickBlock event) {
@@ -108,6 +109,7 @@ public class CleaveOreEvents {
 
         serverLevel.setBlock(pos, replacementState, Block.UPDATE_ALL);
         RECENT_PLUCK_TICKS.put(pluckedKey, now);
+        PLUCKED_HOST_STATES.put(pluckedKey, replacementState);
 
         SoundType sounds = state.getSoundType();
         serverLevel.playSound(
@@ -211,6 +213,42 @@ public class CleaveOreEvents {
     private static void denyFurtherUse(PlayerInteractEvent.RightClickBlock event) {
         event.setUseItem(Event.Result.DENY);
         event.setUseBlock(Event.Result.DENY);
+    }
+
+    @SubscribeEvent
+    public void onBreakPluckedHost(BlockEvent.BreakEvent event) {
+        if (!(event.getPlayer() instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+        if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        BlockPos pos = event.getPos();
+        PluckedPos key = new PluckedPos(serverLevel.dimension().location().toString(), pos.asLong());
+        BlockState expected = PLUCKED_HOST_STATES.get(key);
+        BlockState current = serverLevel.getBlockState(pos);
+        if (expected == null || !current.is(expected.getBlock())) {
+            return;
+        }
+
+        PLUCKED_HOST_STATES.remove(key);
+        event.setCanceled(true);
+
+        ItemStack tool = serverPlayer.getMainHandItem();
+        if (!serverPlayer.isCreative()) {
+            if (!tool.isEmpty()) {
+                tool.hurtAndBreak(1, serverPlayer, p -> p.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+            }
+            if (serverPlayer.hasCorrectToolForDrops(current)) {
+                Item asItem = current.getBlock().asItem();
+                if (asItem != Item.byBlock(Blocks.AIR)) {
+                    Block.popResource(serverLevel, pos, new ItemStack(asItem));
+                }
+            }
+        }
+
+        serverLevel.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
     }
 
     private record PluckedPos(String dimensionKey, long packedPos) {
