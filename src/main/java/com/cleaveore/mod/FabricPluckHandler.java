@@ -1,7 +1,6 @@
 package com.cleaveore.mod;
 
 import com.cleaveore.mod.util.OreClassifier;
-import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -36,7 +35,6 @@ import java.util.UUID;
 public final class FabricPluckHandler {
     private static final Map<UUID, Long> FAIL_COOLDOWN = new HashMap<>();
     private static final Map<PluckedPos, Long> RECENT_PLUCK_TICKS = new HashMap<>();
-    private static final Map<PluckedPos, BlockState> PLUCKED_HOST_STATES = new HashMap<>();
 
     private FabricPluckHandler() {
     }
@@ -113,7 +111,6 @@ public final class FabricPluckHandler {
             state.getBlock().onBroken(serverWorld, pos, state);
             serverWorld.setBlockState(pos, replacementState, Block.NOTIFY_ALL);
             RECENT_PLUCK_TICKS.put(key, now);
-            PLUCKED_HOST_STATES.put(key, replacementState);
 
             BlockSoundGroup sounds = state.getSoundGroup();
             serverWorld.playSound(null, pos, sounds.getBreakSound(), SoundCategory.BLOCKS, (sounds.getVolume() + 1.0F) / 2.0F, getSuccessPitch(state, sounds.getPitch()));
@@ -122,35 +119,6 @@ public final class FabricPluckHandler {
             serverWorld.spawnParticles(ParticleTypes.GLOW, center.x, center.y, center.z, 4, 0.22, 0.22, 0.22, 0.01);
 
             return ActionResult.SUCCESS;
-        });
-
-        PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
-            if (!(world instanceof ServerWorld serverWorld) || !(player instanceof ServerPlayerEntity serverPlayer)) {
-                return true;
-            }
-            PluckedPos key = new PluckedPos(serverWorld.getRegistryKey().getValue().toString(), pos.asLong());
-            BlockState expected = PLUCKED_HOST_STATES.get(key);
-            if (expected == null || !state.isOf(expected.getBlock())) {
-                return true;
-            }
-
-            PLUCKED_HOST_STATES.remove(key);
-
-            ItemStack tool = player.getMainHandStack();
-            if (!player.isCreative()) {
-                if (!tool.isEmpty()) {
-                    tool.damage(1, serverPlayer, p -> p.sendToolBreakStatus(player.getActiveHand()));
-                }
-                if (player.canHarvest(state)) {
-                    Item asItem = state.getBlock().asItem();
-                    if (asItem != Items.AIR) {
-                        Block.dropStack(serverWorld, pos, new ItemStack(asItem));
-                    }
-                }
-            }
-
-            serverWorld.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
-            return false;
         });
     }
 
