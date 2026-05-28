@@ -59,6 +59,14 @@ public class CleaveOreEvents {
         if (!isPickaxeLikeTool(tool, state)) {
             return;
         }
+        if (isAncientDebris(state)) {
+            event.setCanceled(true);
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            serverLevel.playSound(null, pos, SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.BLOCKS, 0.35F, 0.65F);
+            serverPlayer.displayClientMessage(Component.literal("Pluck failed").withStyle(ChatFormatting.DARK_GRAY), true);
+            spawnFailX(serverLevel, pos);
+            return;
+        }
         if (!OreClassifier.isPluckableOre(state)) {
             return;
         }
@@ -116,13 +124,14 @@ public class CleaveOreEvents {
 
     private static boolean canHarvestOre(ItemStack tool, BlockState state) {
         String path = BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath();
-        if ("ancient_debris".equals(path)) {
-            return tool.isCorrectToolForDrops(Blocks.OBSIDIAN.defaultBlockState());
-        }
         if ("nether_gold_ore".equals(path) || "nether_quartz_ore".equals(path)) {
             return tool.isCorrectToolForDrops(Blocks.IRON_ORE.defaultBlockState());
         }
         return tool.isCorrectToolForDrops(state);
+    }
+
+    private static boolean isAncientDebris(BlockState state) {
+        return "ancient_debris".equals(BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath());
     }
 
     private static void spawnFailX(ServerLevel level, BlockPos pos) {

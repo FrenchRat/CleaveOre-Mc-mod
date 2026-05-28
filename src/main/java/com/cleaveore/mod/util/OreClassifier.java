@@ -16,7 +16,7 @@ public final class OreClassifier {
         Block block = state.getBlock();
         String path = BuiltInRegistries.BLOCK.getKey(block).getPath();
 
-        if (block == Blocks.ANCIENT_DEBRIS) return true;
+        if (block == Blocks.ANCIENT_DEBRIS) return false;
         if (block instanceof DropExperienceBlock) return true;
 
         if (state.is(BlockTags.COAL_ORES)
