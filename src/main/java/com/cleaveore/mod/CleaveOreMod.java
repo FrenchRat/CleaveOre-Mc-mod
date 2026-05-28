@@ -2,21 +2,19 @@ package com.cleaveore.mod;
 
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Mod;
 
 @Mod(CleaveOreMod.MOD_ID)
 public class CleaveOreMod {
     public static final String MOD_ID = "cleaveore";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public CleaveOreMod(IEventBus modEventBus, ModContainer modContainer) {
+    public CleaveOreMod() {
         CleaveOreConfig.load();
-        NeoForge.EVENT_BUS.register(new CleaveOreEvents());
-        NeoForge.EVENT_BUS.register(new CleaveOreTooltipEvents());
-        LOGGER.info("CleaveOre (NeoForge) initialized.");
+        MinecraftForge.EVENT_BUS.register(new CleaveOreEvents());
+        MinecraftForge.EVENT_BUS.register(new CleaveOreTooltipEvents());
+        LOGGER.info("CleaveOre (Forge/Compat) initialized.");
     }
 }
 
