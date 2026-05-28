@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.ChatFormatting;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.ItemAbilities;
@@ -184,20 +185,21 @@ public class CleaveOreEvents {
             serverPlayer.displayClientMessage(Component.literal("failed").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC), true);
         }
         if (CleaveOreConfig.get().showFailXParticles) {
-            spawnFailX(serverLevel, pos);
+            spawnFailX(serverLevel, pos, serverPlayer);
         }
     }
 
-    private static void spawnFailX(ServerLevel level, BlockPos pos) {
+    private static void spawnFailX(ServerLevel level, BlockPos pos, ServerPlayer player) {
         double scale = Math.max(0.2, CleaveOreConfig.get().failParticleScale);
-        double cx = pos.getX() + 0.5;
-        double cy = pos.getY() + 0.62;
-        double cz = pos.getZ() + 0.5;
+        Vec3 center = new Vec3(pos.getX() + 0.5, pos.getY() + 0.62, pos.getZ() + 0.5);
+        Vec3 towardPlayer = player.getEyePosition().subtract(center).normalize();
+        Vec3 facePoint = center.add(towardPlayer.scale(0.33));
+        Vec3 drift = towardPlayer.scale(0.03);
         DustParticleOptions red = new DustParticleOptions(new Vector3f(0.95F, 0.12F, 0.12F), 0.65F);
         for (int i = -2; i <= 2; i++) {
             double t = i * 0.035 * scale;
-            level.sendParticles(red, cx + t, cy + t, cz, 1, 0.0, 0.0, 0.0, 0.0);
-            level.sendParticles(red, cx + t, cy - t, cz, 1, 0.0, 0.0, 0.0, 0.0);
+            level.sendParticles(red, facePoint.x + t, facePoint.y + t, facePoint.z, 1, drift.x, drift.y, drift.z, 0.0);
+            level.sendParticles(red, facePoint.x + t, facePoint.y - t, facePoint.z, 1, drift.x, drift.y, drift.z, 0.0);
         }
     }
 
