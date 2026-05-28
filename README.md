@@ -5,16 +5,15 @@ CleaveOre is a lightweight mining mod that makes ore collection feel faster and 
 ## What It Does
 
 - Left-click mining stays vanilla.
-- Right-clicking an ore with a pickaxe-capable tool plucks the ore out and leaves a shell block behind.
-- Shell cleanup is smooth, so mining flow stays consistent.
+- Right-clicking an ore with a pickaxe-capable tool plucks the ore out and converts the block to vanilla host stone (`stone`, `deepslate`, or `netherrack`).
 - Visual effects are designed to look good with shader packs and texture packs.
 
 ## Supported Versions
 
-- NeoForge 1.21.1 (`v1.1.3-beta-neoforge-1.21.1`)
-- NeoForge 1.20.1 (`v1.1.2-beta-neoforge-1.20.1-compat`)
-- Forge 1.20.1 (`v1.1.2-beta-forge-1.20.1`)
-- Fabric 1.20.1 (`v1.1.2-beta-fabric-1.20.1`)
+- NeoForge 1.21.1 (`v1.1.3-neoforge-1.21.1`)
+- NeoForge 1.20.1 (`v1.1.2-neoforge-1.20.1-compat`)
+- Forge 1.20.1 (`v1.1.2-forge-1.20.1`)
+- Fabric 1.20.1 (`v1.1.2-fabric-1.20.1`)
 
 ## Download
 

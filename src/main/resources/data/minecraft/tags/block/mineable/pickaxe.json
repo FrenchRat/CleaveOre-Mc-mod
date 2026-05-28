@@ -1,10 +1,5 @@
 {
   "replace": false,
-  "values": [
-    "cleaveore:hollow_stone_shell",
-    "cleaveore:hollow_deepslate_shell",
-    "cleaveore:hollow_nether_shell",
-    "cleaveore:hollow_ancient_debris_shell"
-  ]
+  "values": []
 }
 

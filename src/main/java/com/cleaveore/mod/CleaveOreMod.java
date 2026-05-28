@@ -1,7 +1,6 @@
 package com.cleaveore.mod;
 
 import com.mojang.logging.LogUtils;
-import com.cleaveore.mod.registry.ModBlocks;
 import org.slf4j.Logger;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -15,8 +14,6 @@ public class CleaveOreMod {
 
     public CleaveOreMod(IEventBus modEventBus, ModContainer modContainer) {
         CleaveOreConfig.load();
-        ModBlocks.BLOCKS.register(modEventBus);
-        ModBlocks.ITEMS.register(modEventBus);
         NeoForge.EVENT_BUS.register(new CleaveOreEvents());
         NeoForge.EVENT_BUS.register(new CleaveOreTooltipEvents());
         LOGGER.info("CleaveOre (NeoForge) initialized.");

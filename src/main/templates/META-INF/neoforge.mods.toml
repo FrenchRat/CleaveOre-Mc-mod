@@ -8,7 +8,7 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="CollinDrake"
 description='''
-Right-click ores with a pickaxe to pluck the ore and leave a hollow shell.
+Right-click ores with a pickaxe to pluck the ore cleanly.
 '''
 
 [[dependencies.${mod_id}]]
