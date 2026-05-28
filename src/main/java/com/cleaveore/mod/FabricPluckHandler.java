@@ -9,7 +9,10 @@ import net.minecraft.block.ExperienceDroppingBlock;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.MiningToolItem;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
@@ -88,7 +91,7 @@ public final class FabricPluckHandler {
             if (!OreClassifier.isPluckableOre(state)) {
                 return ActionResult.PASS;
             }
-            if (!canHarvestPluck(tool, state)) {
+            if (!canHarvestPluck(serverPlayer, tool, state)) {
                 failFeedback(serverPlayer, serverWorld, pos);
                 return ActionResult.SUCCESS;
             }
@@ -120,17 +123,24 @@ public final class FabricPluckHandler {
     }
 
     private static boolean isPickaxeLikeTool(ItemStack tool, BlockState state) {
-        if (tool.isEmpty()) return false;
-        if (tool.isSuitableFor(state)) return true;
-        return state.isIn(net.minecraft.registry.tag.BlockTags.PICKAXE_MINEABLE) && tool.getMiningSpeedMultiplier(state) > 1.0F;
+        if (tool.isEmpty()) {
+            return false;
+        }
+        if (tool.isIn(ItemTags.PICKAXES)) {
+            return true;
+        }
+        if (tool.getItem() instanceof MiningToolItem) {
+            return true;
+        }
+        return state.isIn(BlockTags.PICKAXE_MINEABLE) && tool.getMiningSpeedMultiplier(state) > 1.0F;
     }
 
-    private static boolean canHarvestPluck(ItemStack tool, BlockState state) {
+    private static boolean canHarvestPluck(ServerPlayerEntity player, ItemStack tool, BlockState state) {
         String path = Registries.BLOCK.getId(state.getBlock()).getPath();
         if ("nether_gold_ore".equals(path) || "nether_quartz_ore".equals(path)) {
             return tool.isSuitableFor(Blocks.IRON_ORE.getDefaultState());
         }
-        return tool.isSuitableFor(state);
+        return player.canHarvest(state);
     }
 
     private static boolean isAncientDebris(BlockState state) {
