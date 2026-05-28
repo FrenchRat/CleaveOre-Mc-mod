@@ -5,7 +5,7 @@ CleaveOre is a lightweight mining mod that makes ore collection feel faster and 
 ## What It Does
 
 - Left-click mining stays vanilla.
-- Right-clicking an ore with a pickaxe-capable tool plucks the ore out and converts the block to vanilla host stone (`stone`, `deepslate`, or `netherrack`).
+- Right-clicking an ore with a pickaxe-capable tool plucks the ore out and converts the block to a base host block (for example `stone`, `deepslate`, `netherrack`, `blackstone`, or `end_stone`).
 - Visual effects are designed to look good with shader packs and texture packs.
 
 ## Supported Versions

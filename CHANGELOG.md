@@ -4,8 +4,8 @@
 - Added subtle fail feedback stack: low fail sound, dark-gray action-bar cue, tiny fail-X particles.
 - Enforced Nether ore pluck harvest tiers (no wooden pluck bypass).
 - Disabled Ancient Debris plucking.
-- Added custom shell visual family (stone/deepslate/nether/ancient debris style consistency).
-- Fixed shell cleanup drops to return base blocks.
+- Removed hollow shell system and switched post-pluck replacement to base host blocks.
+- Post-pluck host replacements now favor vanilla base materials (stone/deepslate/netherrack/blackstone/end stone).
 - Added datapack tag controls:
   - `cleaveore:pluckable_ores`
   - `cleaveore:non_pluckable_ores`
