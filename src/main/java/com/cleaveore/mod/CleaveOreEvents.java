@@ -37,6 +37,7 @@ public class CleaveOreEvents {
 
     private static final Map<UUID, Long> FAIL_COOLDOWN = new HashMap<>();
     private static final Map<PluckedPos, Block> PLUCKED_HOSTS = new HashMap<>();
+    private static final Map<PluckedPos, Long> RECENT_PLUCK_TICKS = new HashMap<>();
 
     @SubscribeEvent
     public void onRightClickOre(PlayerInteractEvent.RightClickBlock event) {
@@ -48,12 +49,15 @@ public class CleaveOreEvents {
             return;
         }
         BlockPos pos = event.getPos();
+        PluckedPos pluckedKey = new PluckedPos(serverLevel.dimension().location().toString(), pos.asLong());
+        long now = serverLevel.getGameTime();
         BlockState state = serverLevel.getBlockState(pos);
         boolean hasMainPickaxe = isPickaxeLikeTool(player.getMainHandItem(), state);
         boolean targetIsOre = OreClassifier.isPluckableOre(state);
 
         // Prevent offhand placements/uses (shield, lantern, etc.) while pluck conditions are met.
-        if (event.getHand() == InteractionHand.OFF_HAND && hasMainPickaxe && targetIsOre) {
+        boolean justPluckedHere = now - RECENT_PLUCK_TICKS.getOrDefault(pluckedKey, Long.MIN_VALUE / 2) <= 2;
+        if (event.getHand() == InteractionHand.OFF_HAND && hasMainPickaxe && (targetIsOre || justPluckedHere)) {
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.SUCCESS);
             return;
@@ -93,7 +97,8 @@ public class CleaveOreEvents {
         }
 
         serverLevel.setBlock(pos, replacementState, Block.UPDATE_ALL);
-        PLUCKED_HOSTS.put(new PluckedPos(serverLevel.dimension().location().toString(), pos.asLong()), replacementState.getBlock());
+        PLUCKED_HOSTS.put(pluckedKey, replacementState.getBlock());
+        RECENT_PLUCK_TICKS.put(pluckedKey, now);
 
         SoundType sounds = state.getSoundType();
         serverLevel.playSound(
