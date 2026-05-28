@@ -1,6 +1,5 @@
 package com.cleaveore.mod;
 
-import com.cleaveore.mod.registry.ModBlocks;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +24,7 @@ public class CleaveOreMod implements ModInitializer {
     public void onInitialize() {
         LOGGER.info("CleaveOre Mod initializing...");
         CleaveOreConfig.load();
-
-        // Register our custom blocks (the hollowed-out shell variants)
-        ModBlocks.register();
+        FabricPluckHandler.register();
 
         LOGGER.info("CleaveOre Mod ready!");
     }

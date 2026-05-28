@@ -1,6 +1,5 @@
 package com.cleaveore.mod.util;
 
-import com.cleaveore.mod.registry.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -48,20 +47,4 @@ public final class OreClassifier {
         return path.endsWith("_ore") || path.startsWith("ore_") || path.contains("_ore_");
     }
 
-    public static Block getReplacementShell(BlockState state) {
-        Block block = state.getBlock();
-        Identifier id = Registries.BLOCK.getId(block);
-        String path = id.getPath();
-
-        if (block == Blocks.ANCIENT_DEBRIS) {
-            return ModBlocks.HOLLOW_ANCIENT_DEBRIS_SHELL;
-        }
-        if (path.contains("deepslate")) {
-            return ModBlocks.HOLLOW_DEEPSLATE_COAL_SHELL;
-        }
-        if (path.contains("nether")) {
-            return ModBlocks.HOLLOW_NETHER_QUARTZ_SHELL;
-        }
-        return ModBlocks.HOLLOW_COAL_SHELL;
-    }
 }
