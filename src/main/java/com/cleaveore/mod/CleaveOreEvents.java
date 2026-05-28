@@ -134,6 +134,9 @@ public class CleaveOreEvents {
         if (path.contains("deepslate")) {
             return Blocks.DEEPSLATE;
         }
+        if (path.contains("stone")) {
+            return Blocks.STONE;
+        }
         if (path.contains("nether") || path.contains("netherrack")) {
             return Blocks.NETHERRACK;
         }
