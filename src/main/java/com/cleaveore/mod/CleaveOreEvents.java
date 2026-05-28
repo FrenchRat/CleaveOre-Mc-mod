@@ -215,11 +215,12 @@ public class CleaveOreEvents {
             .add(side.scale(randSideA))
             .add(side2.scale(randSideB))
             .add(0.0, 0.03, 0.0);
+        Vec3 flow = towardPlayer.scale(0.010).add(side.scale((level.random.nextDouble() - 0.5) * 0.004));
         DustParticleOptions red = new DustParticleOptions(new Vector3f(0.95F, 0.12F, 0.12F), 0.40F);
         for (int i = -1; i <= 1; i++) {
             double t = i * 0.028 * scale;
-            level.sendParticles(red, facePoint.x + t, facePoint.y + t, facePoint.z, 1, 0.0, 0.0, 0.0, 0.0);
-            level.sendParticles(red, facePoint.x + t, facePoint.y - t, facePoint.z, 1, 0.0, 0.0, 0.0, 0.0);
+            level.sendParticles(red, facePoint.x + t, facePoint.y + t, facePoint.z, 1, flow.x, flow.y, flow.z, 0.0);
+            level.sendParticles(red, facePoint.x + t, facePoint.y - t, facePoint.z, 1, flow.x, flow.y, flow.z, 0.0);
         }
     }
 
