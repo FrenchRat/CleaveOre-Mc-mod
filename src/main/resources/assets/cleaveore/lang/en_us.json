@@ -1,6 +1,7 @@
 {
   "key.categories.cleaveore": "Cleave Ore",
   "key.cleaveore.ore_pluck": "Ore Pluck (Use Item)",
+  "tooltip.cleaveore.pickaxe_hint": "Right-click ores to pluck",
   "block.cleaveore.hollow_stone_shell": "Hollow Stone Shell",
   "block.cleaveore.hollow_deepslate_shell": "Hollow Deepslate Shell",
   "block.cleaveore.hollow_nether_shell": "Hollow Nether Shell",

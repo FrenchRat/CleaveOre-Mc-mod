@@ -14,9 +14,11 @@ public class CleaveOreMod {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public CleaveOreMod(IEventBus modEventBus, ModContainer modContainer) {
+        CleaveOreConfig.load();
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlocks.ITEMS.register(modEventBus);
         NeoForge.EVENT_BUS.register(new CleaveOreEvents());
+        NeoForge.EVENT_BUS.register(new CleaveOreTooltipEvents());
         LOGGER.info("CleaveOre (NeoForge) initialized.");
     }
 }
