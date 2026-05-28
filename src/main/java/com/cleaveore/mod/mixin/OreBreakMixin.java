@@ -1,5 +1,6 @@
 package com.cleaveore.mod.mixin;
 
+import com.cleaveore.mod.CleaveOreConfig;
 import com.cleaveore.mod.util.OreClassifier;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -28,9 +29,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Mixin(ServerPlayerInteractionManager.class)
 public abstract class OreBreakMixin {
+    private static final Map<UUID, Long> FAIL_COOLDOWN = new ConcurrentHashMap<>();
 
     @Shadow public ServerPlayerEntity player;
     @Shadow public ServerWorld world;
@@ -48,17 +53,12 @@ public abstract class OreBreakMixin {
 
         Block shellBlock = OreClassifier.getReplacementShell(state);
         ItemStack tool = this.player.getMainHandStack();
+        if (isAncientDebris(state) && !CleaveOreConfig.get().allowAncientDebrisPluck) {
+            failFeedback(pos);
+            return;
+        }
         if (!canHarvestPluck(tool, state)) {
-            this.world.playSound(
-                null,
-                pos,
-                SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(),
-                SoundCategory.BLOCKS,
-                0.35F,
-                0.65F
-            );
-            this.player.sendMessage(Text.literal("Pluck failed").formatted(Formatting.DARK_GRAY), true);
-            spawnFailX(pos);
+            failFeedback(pos);
             return;
         }
 
@@ -77,7 +77,7 @@ public abstract class OreBreakMixin {
             expBlock.onStacksDropped(state, this.world, pos, tool, true);
         }
 
-        if (!tool.isEmpty()) {
+        if (!tool.isEmpty() && this.world.random.nextDouble() < CleaveOreConfig.get().pluckDurabilityChance) {
             tool.damage(1, this.player, p -> p.sendToolBreakStatus(this.player.getActiveHand()));
         }
 
@@ -91,7 +91,7 @@ public abstract class OreBreakMixin {
             sounds.getBreakSound(),
             SoundCategory.BLOCKS,
             (sounds.getVolume() + 1.0F) / 2.0F,
-            sounds.getPitch() * 1.18F
+            getSuccessPitch(state, sounds.getPitch())
         );
 
         Vec3d center = Vec3d.ofCenter(pos);
@@ -115,25 +115,59 @@ public abstract class OreBreakMixin {
     }
 
     private void spawnFailX(BlockPos pos) {
+        double scale = Math.max(0.2, CleaveOreConfig.get().failParticleScale);
         double cx = pos.getX() + 0.5;
         double cy = pos.getY() + 0.62;
         double cz = pos.getZ() + 0.5;
         for (int i = -2; i <= 2; i++) {
-            double t = i * 0.045;
+            double t = i * 0.045 * scale;
             this.world.spawnParticles(ParticleTypes.GLOW, cx + t, cy + t, cz, 1, 0.0, 0.0, 0.0, 0.0);
             this.world.spawnParticles(ParticleTypes.GLOW, cx + t, cy - t, cz, 1, 0.0, 0.0, 0.0, 0.0);
         }
-        this.world.spawnParticles(ParticleTypes.SMOKE, cx, cy, cz, 3, 0.06, 0.04, 0.06, 0.0);
+        this.world.spawnParticles(ParticleTypes.SMOKE, cx, cy, cz, 3, 0.06 * scale, 0.04 * scale, 0.06 * scale, 0.0);
     }
 
     private static boolean canHarvestPluck(ItemStack tool, BlockState state) {
         String path = Registries.BLOCK.getId(state.getBlock()).getPath();
-        if ("ancient_debris".equals(path)) {
-            return tool.isSuitableFor(Blocks.OBSIDIAN.getDefaultState());
-        }
         if ("nether_gold_ore".equals(path) || "nether_quartz_ore".equals(path)) {
             return tool.isSuitableFor(Blocks.IRON_ORE.getDefaultState());
         }
         return tool.isSuitableFor(state);
+    }
+
+    private static boolean isAncientDebris(BlockState state) {
+        return "ancient_debris".equals(Registries.BLOCK.getId(state.getBlock()).getPath());
+    }
+
+    private float getSuccessPitch(BlockState state, float basePitch) {
+        String path = Registries.BLOCK.getId(state.getBlock()).getPath();
+        if (path.contains("diamond") || path.contains("emerald")) {
+            return basePitch * 1.22F;
+        }
+        if (path.contains("gold") || path.contains("quartz")) {
+            return basePitch * 1.2F;
+        }
+        if (path.contains("redstone") || path.contains("copper")) {
+            return basePitch * 1.16F;
+        }
+        return basePitch * 1.18F;
+    }
+
+    private void failFeedback(BlockPos pos) {
+        long now = this.world.getTime();
+        int cooldown = Math.max(0, CleaveOreConfig.get().failCooldownTicks);
+        long last = FAIL_COOLDOWN.getOrDefault(this.player.getUuid(), Long.MIN_VALUE / 2);
+        if (now - last < cooldown) {
+            return;
+        }
+        FAIL_COOLDOWN.put(this.player.getUuid(), now);
+
+        this.world.playSound(null, pos, SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), SoundCategory.BLOCKS, 0.35F, 0.65F);
+        if (CleaveOreConfig.get().showFailActionBar) {
+            this.player.sendMessage(Text.literal("Pluck failed").formatted(Formatting.DARK_GRAY), true);
+        }
+        if (CleaveOreConfig.get().showFailXParticles) {
+            spawnFailX(pos);
+        }
     }
 }

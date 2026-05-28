@@ -24,6 +24,7 @@ public class CleaveOreMod implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("CleaveOre Mod initializing...");
+        CleaveOreConfig.load();
 
         // Register our custom blocks (the hollowed-out shell variants)
         ModBlocks.register();
