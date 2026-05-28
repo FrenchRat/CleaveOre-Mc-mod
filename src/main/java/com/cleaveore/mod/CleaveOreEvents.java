@@ -1,10 +1,12 @@
 package com.cleaveore.mod;
 
 import com.cleaveore.mod.util.OreClassifier;
+import org.joml.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
@@ -179,7 +181,7 @@ public class CleaveOreEvents {
 
         serverLevel.playSound(null, pos, SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.BLOCKS, 0.35F, 0.65F);
         if (CleaveOreConfig.get().showFailActionBar) {
-            serverPlayer.displayClientMessage(Component.literal("Pluck failed").withStyle(ChatFormatting.DARK_GRAY), true);
+            serverPlayer.displayClientMessage(Component.literal("failed").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC), true);
         }
         if (CleaveOreConfig.get().showFailXParticles) {
             spawnFailX(serverLevel, pos);
@@ -191,10 +193,11 @@ public class CleaveOreEvents {
         double cx = pos.getX() + 0.5;
         double cy = pos.getY() + 0.62;
         double cz = pos.getZ() + 0.5;
+        DustParticleOptions red = new DustParticleOptions(new Vector3f(0.95F, 0.12F, 0.12F), 0.65F);
         for (int i = -2; i <= 2; i++) {
             double t = i * 0.035 * scale;
-            level.sendParticles(ParticleTypes.GLOW, cx + t, cy + t, cz, 1, 0.0, 0.0, 0.0, 0.0);
-            level.sendParticles(ParticleTypes.GLOW, cx + t, cy - t, cz, 1, 0.0, 0.0, 0.0, 0.0);
+            level.sendParticles(red, cx + t, cy + t, cz, 1, 0.0, 0.0, 0.0, 0.0);
+            level.sendParticles(red, cx + t, cy - t, cz, 1, 0.0, 0.0, 0.0, 0.0);
         }
     }
 
