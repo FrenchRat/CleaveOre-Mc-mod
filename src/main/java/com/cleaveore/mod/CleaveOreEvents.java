@@ -193,13 +193,20 @@ public class CleaveOreEvents {
         double scale = Math.max(0.2, CleaveOreConfig.get().failParticleScale);
         Vec3 center = new Vec3(pos.getX() + 0.5, pos.getY() + 0.62, pos.getZ() + 0.5);
         Vec3 towardPlayer = player.getEyePosition().subtract(center).normalize();
-        Vec3 facePoint = center.add(towardPlayer.scale(0.33));
-        Vec3 drift = towardPlayer.scale(0.03);
-        DustParticleOptions red = new DustParticleOptions(new Vector3f(0.95F, 0.12F, 0.12F), 0.65F);
-        for (int i = -2; i <= 2; i++) {
-            double t = i * 0.035 * scale;
-            level.sendParticles(red, facePoint.x + t, facePoint.y + t, facePoint.z, 1, drift.x, drift.y, drift.z, 0.0);
-            level.sendParticles(red, facePoint.x + t, facePoint.y - t, facePoint.z, 1, drift.x, drift.y, drift.z, 0.0);
+        Vec3 side = towardPlayer.cross(new Vec3(0.0, 1.0, 0.0));
+        if (side.lengthSqr() < 1.0E-6) {
+            side = new Vec3(1.0, 0.0, 0.0);
+        } else {
+            side = side.normalize();
+        }
+
+        // Keep X near the edge of the face so it stays visible but out of direct crosshair view.
+        Vec3 facePoint = center.add(towardPlayer.scale(0.29)).add(side.scale(0.17)).add(0.0, 0.08, 0.0);
+        DustParticleOptions red = new DustParticleOptions(new Vector3f(0.95F, 0.12F, 0.12F), 0.40F);
+        for (int i = -1; i <= 1; i++) {
+            double t = i * 0.028 * scale;
+            level.sendParticles(red, facePoint.x + t, facePoint.y + t, facePoint.z, 1, 0.0, 0.0, 0.0, 0.0);
+            level.sendParticles(red, facePoint.x + t, facePoint.y - t, facePoint.z, 1, 0.0, 0.0, 0.0, 0.0);
         }
     }
 
