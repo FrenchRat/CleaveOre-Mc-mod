@@ -3,7 +3,7 @@
   "id": "cleaveore",
   "version": "${version}",
   "name": "CleaveOre",
-  "description": "Ore blocks crack open and eject the ore, leaving behind a hollow shell you can mine afterward. Lightweight and Modrinth modpack ready.",
+  "description": "Ore blocks crack open and eject the ore, Lightweight and Modrinth modpack ready.",
   "authors": ["Ethan Drake", "ChatGPT"],
   "contact": {},
   "license": "MIT",
