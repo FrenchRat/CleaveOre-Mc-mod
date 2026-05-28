@@ -1,43 +1,38 @@
-# CleaveOre (NeoForge 1.20.1 Compat Build)
+# CleaveOre
 
-This branch provides a **1.20.1 compatibility jar** built from the Forge 47.2.0 codebase.
+CleaveOre is a lightweight mining mod that makes ore collection feel faster and cleaner while keeping normal block mining behavior.
 
-## Important
+## What It Does
 
-- Minecraft: `1.20.1`
-- Primary loader target: `Forge 47.2.0+`
-- Legacy compatibility target: `NeoForge 1.20.1` (where Forge-compatible 1.20.1 mods are accepted)
-- Java: `17`
+- Left-click mining stays vanilla.
+- Right-clicking an ore with a pickaxe-capable tool plucks the ore out and converts the block to vanilla host stone (`stone`, `deepslate`, or `netherrack`).
+- Visual effects are designed to look good with shader packs and texture packs.
 
-This is a compatibility build for users who specifically run a NeoForge-labeled 1.20.1 setup.
+## Supported Versions
 
-## Features
+- NeoForge 1.21.1 (`v1.1.3-neoforge-1.21.1`)
+- NeoForge 1.20.1 (`v1.1.2-neoforge-1.20.1-compat`)
+- Forge 1.20.1 (`v1.1.2-forge-1.20.1`)
+- Fabric 1.20.1 (`v1.1.2-fabric-1.20.1`)
 
-- Right-click ore pluck with pickaxe-capable tools
-- Left-click normal mining preserved for peeking
-- Fast shell transition block after pluck
-- Texture-pack friendly particles and drop ejection from clicked face
-- Offhand right-click suppression during pluck interaction
+## Download
 
-## Build
+Get releases here:
 
-```powershell
-.\gradlew.bat clean build
-```
+- [GitHub Releases](https://github.com/FrenchRat/CleaveOre-Mc-mod/releases)
 
-Output jar:
+Download the jar that matches your loader and Minecraft version.
 
-- `build/libs/cleaveore-1.1.2-beta-neoforge-1.20.1-compat.jar`
+## Installation
 
-## Install
+1. Install the correct mod loader for your Minecraft version.
+2. Place the matching CleaveOre `.jar` in `.minecraft/mods`.
+3. Start Minecraft with that loader profile.
 
-1. Use a Minecraft `1.20.1` profile.
-2. Install Forge `47.2.0+` or a NeoForge 1.20.1 environment that accepts Forge-compatible mods.
-3. Place this jar in your `mods` folder.
+## Notes
 
-## Repository
-
-- GitHub: [FrenchRat/CleaveOre-Mc-mod](https://github.com/FrenchRat/CleaveOre-Mc-mod)
+- Each release includes one main mod `.jar` asset.
+- GitHub may also show source archives (`Source code (zip/tar.gz)`), which are not mod install files.
 
 ## License
 

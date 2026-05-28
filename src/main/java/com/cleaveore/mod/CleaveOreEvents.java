@@ -1,6 +1,5 @@
 package com.cleaveore.mod;
 
-import com.cleaveore.mod.registry.ModBlocks;
 import com.cleaveore.mod.util.OreClassifier;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -76,7 +75,7 @@ public class CleaveOreEvents {
             return;
         }
 
-        Block replacement = ModBlocks.getShellFor(state);
+        Block replacement = getHostBlockFor(state);
 
         event.setCanceled(true);
         event.setCancellationResult(InteractionResult.SUCCESS);
@@ -129,6 +128,17 @@ public class CleaveOreEvents {
 
     private static boolean isAncientDebris(BlockState state) {
         return "ancient_debris".equals(BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath());
+    }
+
+    private static Block getHostBlockFor(BlockState state) {
+        String path = BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath();
+        if (path.contains("deepslate")) {
+            return Blocks.DEEPSLATE;
+        }
+        if (path.contains("nether")) {
+            return Blocks.NETHERRACK;
+        }
+        return Blocks.STONE;
     }
 
     private static float getSuccessPitch(BlockState state, float basePitch) {
