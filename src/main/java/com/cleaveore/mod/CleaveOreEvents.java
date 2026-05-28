@@ -1,12 +1,10 @@
 package com.cleaveore.mod;
 
 import com.cleaveore.mod.util.OreClassifier;
-import org.joml.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
@@ -25,7 +23,6 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.ChatFormatting;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.ItemAbilities;
@@ -81,7 +78,7 @@ public class CleaveOreEvents {
             return;
         }
 
-        Block replacement = getHostBlockFor(state);
+        BlockState replacementState = getHostReplacementState(serverLevel, pos, state);
 
         event.setCanceled(true);
         event.setCancellationResult(InteractionResult.SUCCESS);
@@ -95,8 +92,8 @@ public class CleaveOreEvents {
             tool.hurtAndBreak(1, serverPlayer, EquipmentSlot.MAINHAND);
         }
 
-        serverLevel.setBlock(pos, replacement.defaultBlockState(), Block.UPDATE_ALL);
-        PLUCKED_HOSTS.put(new PluckedPos(serverLevel.dimension().location().toString(), pos.asLong()), replacement);
+        serverLevel.setBlock(pos, replacementState, Block.UPDATE_ALL);
+        PLUCKED_HOSTS.put(new PluckedPos(serverLevel.dimension().location().toString(), pos.asLong()), replacementState.getBlock());
 
         SoundType sounds = state.getSoundType();
         serverLevel.playSound(
@@ -157,6 +154,17 @@ public class CleaveOreEvents {
         return Blocks.STONE;
     }
 
+    private static BlockState getHostReplacementState(ServerLevel level, BlockPos pos, BlockState oreState) {
+        Block host = getHostBlockFor(oreState);
+        for (Direction direction : Direction.values()) {
+            BlockState neighbor = level.getBlockState(pos.relative(direction));
+            if (neighbor.getBlock() == host) {
+                return neighbor;
+            }
+        }
+        return host.defaultBlockState();
+    }
+
     private static float getSuccessPitch(BlockState state, float basePitch) {
         String path = BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath();
         if (path.contains("diamond") || path.contains("emerald")) {
@@ -183,44 +191,6 @@ public class CleaveOreEvents {
         serverLevel.playSound(null, pos, SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.BLOCKS, 0.35F, 0.65F);
         if (CleaveOreConfig.get().showFailActionBar) {
             serverPlayer.displayClientMessage(Component.literal("failed").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC), true);
-        }
-        if (CleaveOreConfig.get().showFailXParticles) {
-            spawnFailX(serverLevel, pos, serverPlayer);
-        }
-    }
-
-    private static void spawnFailX(ServerLevel level, BlockPos pos, ServerPlayer player) {
-        double scale = Math.max(0.2, CleaveOreConfig.get().failParticleScale);
-        Vec3 center = new Vec3(pos.getX() + 0.5, pos.getY() + 0.62, pos.getZ() + 0.5);
-        Vec3 towardPlayer = player.getEyePosition().subtract(center).normalize();
-        Vec3 side = towardPlayer.cross(new Vec3(0.0, 1.0, 0.0));
-        if (side.lengthSqr() < 1.0E-6) {
-            side = new Vec3(1.0, 0.0, 0.0);
-        } else {
-            side = side.normalize();
-        }
-        Vec3 up = new Vec3(0.0, 1.0, 0.0);
-        Vec3 side2 = towardPlayer.cross(side);
-        if (side2.lengthSqr() < 1.0E-6) {
-            side2 = up;
-        } else {
-            side2 = side2.normalize();
-        }
-
-        // Randomize X position across the visible face while keeping it near the surface.
-        double randSideA = (level.random.nextDouble() - 0.5) * 0.34;
-        double randSideB = (level.random.nextDouble() - 0.5) * 0.34;
-        Vec3 facePoint = center
-            .add(towardPlayer.scale(0.29))
-            .add(side.scale(randSideA))
-            .add(side2.scale(randSideB))
-            .add(0.0, 0.03, 0.0);
-        Vec3 flow = towardPlayer.scale(0.010).add(side.scale((level.random.nextDouble() - 0.5) * 0.004));
-        DustParticleOptions red = new DustParticleOptions(new Vector3f(0.95F, 0.12F, 0.12F), 0.40F);
-        for (int i = -1; i <= 1; i++) {
-            double t = i * 0.028 * scale;
-            level.sendParticles(red, facePoint.x + t, facePoint.y + t, facePoint.z, 1, flow.x, flow.y, flow.z, 0.0);
-            level.sendParticles(red, facePoint.x + t, facePoint.y - t, facePoint.z, 1, flow.x, flow.y, flow.z, 0.0);
         }
     }
 
