@@ -63,9 +63,6 @@ public final class FabricPluckHandler {
             if (!(world instanceof ServerWorld serverWorld) || !(player instanceof ServerPlayerEntity serverPlayer)) {
                 return ActionResult.PASS;
             }
-            if (player.isCreative()) {
-                return ActionResult.PASS;
-            }
 
             PluckedPos key = new PluckedPos(serverWorld.getRegistryKey().getValue().toString(), pos.asLong());
             long now = serverWorld.getTime();
@@ -104,7 +101,7 @@ public final class FabricPluckHandler {
             if (state.getBlock() instanceof ExperienceDroppingBlock expBlock) {
                 expBlock.onStacksDropped(state, serverWorld, pos, tool, true);
             }
-            if (!tool.isEmpty() && serverWorld.random.nextDouble() < CleaveOreConfig.get().pluckDurabilityChance) {
+            if (!player.isCreative() && !tool.isEmpty() && serverWorld.random.nextDouble() < CleaveOreConfig.get().pluckDurabilityChance) {
                 tool.damage(1, serverPlayer, p -> p.sendToolBreakStatus(player.getActiveHand()));
             }
 
