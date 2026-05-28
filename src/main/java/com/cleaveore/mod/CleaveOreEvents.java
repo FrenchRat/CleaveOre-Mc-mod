@@ -26,6 +26,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.ChatFormatting;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 
@@ -58,6 +59,7 @@ public class CleaveOreEvents {
         // Prevent offhand placements/uses (shield, lantern, etc.) while pluck conditions are met.
         boolean justPluckedHere = now - RECENT_PLUCK_TICKS.getOrDefault(pluckedKey, Long.MIN_VALUE / 2) <= 2;
         if (event.getHand() == InteractionHand.OFF_HAND && hasMainPickaxe && (targetIsOre || justPluckedHere)) {
+            denyFurtherUse(event);
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.SUCCESS);
             return;
@@ -72,6 +74,9 @@ public class CleaveOreEvents {
         }
         if (isAncientDebris(state) && !CleaveOreConfig.get().allowAncientDebrisPluck) {
             failFeedback(serverPlayer, serverLevel, pos);
+            denyFurtherUse(event);
+            event.setCanceled(true);
+            event.setCancellationResult(InteractionResult.SUCCESS);
             return;
         }
         if (!OreClassifier.isPluckableOre(state)) {
@@ -79,12 +84,16 @@ public class CleaveOreEvents {
         }
         if (!canHarvestOre(tool, state)) {
             failFeedback(serverPlayer, serverLevel, pos);
+            denyFurtherUse(event);
+            event.setCanceled(true);
+            event.setCancellationResult(InteractionResult.SUCCESS);
             return;
         }
 
         BlockState replacementState = getHostReplacementState(serverLevel, pos, state);
 
         event.setCanceled(true);
+        denyFurtherUse(event);
         event.setCancellationResult(InteractionResult.SUCCESS);
 
         Direction face = event.getFace() == null ? Direction.UP : event.getFace();
@@ -197,6 +206,11 @@ public class CleaveOreEvents {
         if (CleaveOreConfig.get().showFailActionBar) {
             serverPlayer.displayClientMessage(Component.literal("failed").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC), true);
         }
+    }
+
+    private static void denyFurtherUse(PlayerInteractEvent.RightClickBlock event) {
+        event.setUseItem(TriState.FALSE);
+        event.setUseBlock(TriState.FALSE);
     }
 
     @SubscribeEvent
