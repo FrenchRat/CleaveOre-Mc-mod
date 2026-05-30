@@ -25,11 +25,13 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.particle.BlockStateParticleEffect;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import org.joml.Vector3f;
 
 public final class FabricPluckHandler {
     private static final Map<UUID, Long> FAIL_COOLDOWN = new HashMap<>();
@@ -112,6 +114,8 @@ public final class FabricPluckHandler {
             Vec3d center = Vec3d.ofCenter(pos);
             serverWorld.spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), center.x, center.y, center.z, 28, 0.35, 0.35, 0.35, 0.08);
             serverWorld.spawnParticles(ParticleTypes.GLOW, center.x, center.y, center.z, 4, 0.22, 0.22, 0.22, 0.01);
+            serverWorld.spawnParticles(ParticleTypes.CRIT, center.x, center.y, center.z, 6, 0.2, 0.2, 0.2, 0.02);
+            serverWorld.spawnParticles(new DustParticleEffect(getOreTint(state), 0.75F), center.x, center.y, center.z, 8, 0.18, 0.18, 0.18, 0.01);
 
             return ActionResult.SUCCESS;
         });
@@ -162,6 +166,20 @@ public final class FabricPluckHandler {
         if (path.contains("gold") || path.contains("quartz")) return basePitch * 1.2F;
         if (path.contains("redstone") || path.contains("copper")) return basePitch * 1.16F;
         return basePitch * 1.18F;
+    }
+
+    private static Vector3f getOreTint(BlockState state) {
+        String path = Registries.BLOCK.getId(state.getBlock()).getPath();
+        if (path.contains("diamond")) return new Vector3f(0.35F, 0.95F, 0.95F);
+        if (path.contains("emerald")) return new Vector3f(0.25F, 0.9F, 0.45F);
+        if (path.contains("gold")) return new Vector3f(1.0F, 0.86F, 0.25F);
+        if (path.contains("copper")) return new Vector3f(0.88F, 0.45F, 0.25F);
+        if (path.contains("redstone")) return new Vector3f(0.95F, 0.18F, 0.18F);
+        if (path.contains("lapis")) return new Vector3f(0.2F, 0.35F, 0.95F);
+        if (path.contains("coal")) return new Vector3f(0.2F, 0.2F, 0.2F);
+        if (path.contains("iron")) return new Vector3f(0.85F, 0.78F, 0.65F);
+        if (path.contains("quartz")) return new Vector3f(0.95F, 0.92F, 0.88F);
+        return new Vector3f(0.8F, 0.8F, 0.8F);
     }
 
     private static void failFeedback(ServerPlayerEntity player, ServerWorld world, BlockPos pos) {
