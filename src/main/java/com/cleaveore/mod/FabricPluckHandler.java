@@ -92,7 +92,7 @@ public final class FabricPluckHandler {
                 return ActionResult.SUCCESS;
             }
 
-            BlockState replacementState = getHostReplacementState(serverWorld, pos, state);
+            BlockState replacementState = getHostReplacementState(state);
             for (ItemStack drop : Block.getDroppedStacks(state, serverWorld, pos, null, player, tool)) {
                 Block.dropStack(serverWorld, pos, drop);
             }
@@ -150,7 +150,7 @@ public final class FabricPluckHandler {
         return Blocks.STONE;
     }
 
-    private static BlockState getHostReplacementState(ServerWorld world, BlockPos pos, BlockState oreState) {
+    private static BlockState getHostReplacementState(BlockState oreState) {
         // Deterministic replacement: always restore the canonical host block state.
         // This avoids any neighbor-state bleed from other mods/resource behaviors.
         return getHostBlockFor(oreState).getDefaultState();
