@@ -23,7 +23,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -105,7 +104,6 @@ public final class FabricPluckHandler {
                 tool.damage(1, serverPlayer, p -> p.sendToolBreakStatus(player.getActiveHand()));
             }
 
-            state.getBlock().onBroken(serverWorld, pos, state);
             serverWorld.setBlockState(pos, replacementState, Block.NOTIFY_ALL);
             RECENT_PLUCK_TICKS.put(key, now);
 
@@ -153,12 +151,9 @@ public final class FabricPluckHandler {
     }
 
     private static BlockState getHostReplacementState(ServerWorld world, BlockPos pos, BlockState oreState) {
-        Block host = getHostBlockFor(oreState);
-        for (Direction direction : Direction.values()) {
-            BlockState neighbor = world.getBlockState(pos.offset(direction));
-            if (neighbor.isOf(host)) return neighbor;
-        }
-        return host.getDefaultState();
+        // Deterministic replacement: always restore the canonical host block state.
+        // This avoids any neighbor-state bleed from other mods/resource behaviors.
+        return getHostBlockFor(oreState).getDefaultState();
     }
 
     private static float getSuccessPitch(BlockState state, float basePitch) {
