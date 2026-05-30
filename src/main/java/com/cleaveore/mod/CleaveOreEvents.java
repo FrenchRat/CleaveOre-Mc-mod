@@ -167,9 +167,26 @@ public class CleaveOreEvents {
     }
 
     private static BlockState getHostReplacementState(ServerLevel level, BlockPos pos, BlockState oreState) {
-        // Deterministic replacement: always restore the canonical host block state.
-        // This avoids any neighbor-state bleed from other mods/resource behaviors.
-        return getHostBlockFor(oreState).defaultBlockState();
+        Block inferredHost = getHostBlockFor(oreState);
+        for (Direction direction : Direction.values()) {
+            BlockState neighbor = level.getBlockState(pos.relative(direction));
+            if (isAllowedHostBlock(neighbor.getBlock())) {
+                return neighbor.getBlock().defaultBlockState();
+            }
+        }
+        return inferredHost.defaultBlockState();
+    }
+
+    private static boolean isAllowedHostBlock(Block block) {
+        return block == Blocks.STONE
+            || block == Blocks.DEEPSLATE
+            || block == Blocks.NETHERRACK
+            || block == Blocks.BLACKSTONE
+            || block == Blocks.END_STONE
+            || block == Blocks.TUFF
+            || block == Blocks.ANDESITE
+            || block == Blocks.DIORITE
+            || block == Blocks.GRANITE;
     }
 
     private static float getSuccessPitch(BlockState state, float basePitch) {
