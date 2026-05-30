@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
@@ -30,6 +31,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import org.joml.Vector3f;
 
 public class CleaveOreEvents {
 
@@ -119,6 +121,8 @@ public class CleaveOreEvents {
         double z = pos.getZ() + 0.5;
         serverLevel.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), x, y, z, 28, 0.35, 0.35, 0.35, 0.08);
         serverLevel.sendParticles(ParticleTypes.GLOW, x, y, z, 4, 0.22, 0.22, 0.22, 0.01);
+        serverLevel.sendParticles(ParticleTypes.CRIT, x, y, z, 6, 0.2, 0.2, 0.2, 0.02);
+        serverLevel.sendParticles(new DustParticleOptions(getOreTint(state), 0.75F), x, y, z, 8, 0.18, 0.18, 0.18, 0.01);
     }
 
     private static boolean isPickaxeLikeTool(ItemStack tool, BlockState state) {
@@ -179,6 +183,20 @@ public class CleaveOreEvents {
             return basePitch * 1.16F;
         }
         return basePitch * 1.18F;
+    }
+
+    private static Vector3f getOreTint(BlockState state) {
+        String path = BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath();
+        if (path.contains("diamond")) return new Vector3f(0.35F, 0.95F, 0.95F);
+        if (path.contains("emerald")) return new Vector3f(0.25F, 0.9F, 0.45F);
+        if (path.contains("gold")) return new Vector3f(1.0F, 0.86F, 0.25F);
+        if (path.contains("copper")) return new Vector3f(0.88F, 0.45F, 0.25F);
+        if (path.contains("redstone")) return new Vector3f(0.95F, 0.18F, 0.18F);
+        if (path.contains("lapis")) return new Vector3f(0.2F, 0.35F, 0.95F);
+        if (path.contains("coal")) return new Vector3f(0.2F, 0.2F, 0.2F);
+        if (path.contains("iron")) return new Vector3f(0.85F, 0.78F, 0.65F);
+        if (path.contains("quartz")) return new Vector3f(0.95F, 0.92F, 0.88F);
+        return new Vector3f(0.8F, 0.8F, 0.8F);
     }
 
     private static void failFeedback(ServerPlayer serverPlayer, ServerLevel serverLevel, BlockPos pos) {
