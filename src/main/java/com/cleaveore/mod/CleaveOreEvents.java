@@ -86,7 +86,7 @@ public class CleaveOreEvents {
             return;
         }
 
-        BlockState replacementState = getHostReplacementState(serverLevel, pos, state);
+        BlockState replacementState = getHostReplacementState(state);
 
         event.setCanceled(true);
         denyFurtherUse(event);
@@ -163,21 +163,8 @@ public class CleaveOreEvents {
         return Blocks.STONE;
     }
 
-    private static BlockState getHostReplacementState(ServerLevel level, BlockPos pos, BlockState oreState) {
-        Block inferredHost = getHostBlockFor(oreState);
-        for (Direction direction : Direction.values()) {
-            BlockState neighbor = level.getBlockState(pos.relative(direction));
-            if (isAllowedHostBlock(neighbor.getBlock())) {
-                return neighbor.getBlock().defaultBlockState();
-            }
-        }
-        return inferredHost.defaultBlockState();
-    }
-
-    private static boolean isAllowedHostBlock(Block block) {
-        return block == Blocks.STONE
-            || block == Blocks.DEEPSLATE
-            || block == Blocks.NETHERRACK;
+    private static BlockState getHostReplacementState(BlockState oreState) {
+        return getHostBlockFor(oreState).defaultBlockState();
     }
 
     private static float getSuccessPitch(BlockState state, float basePitch) {
