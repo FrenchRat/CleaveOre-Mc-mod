@@ -177,13 +177,7 @@ public class CleaveOreEvents {
     private static boolean isAllowedHostBlock(Block block) {
         return block == Blocks.STONE
             || block == Blocks.DEEPSLATE
-            || block == Blocks.NETHERRACK
-            || block == Blocks.BLACKSTONE
-            || block == Blocks.END_STONE
-            || block == Blocks.TUFF
-            || block == Blocks.ANDESITE
-            || block == Blocks.DIORITE
-            || block == Blocks.GRANITE;
+            || block == Blocks.NETHERRACK;
     }
 
     private static float getSuccessPitch(BlockState state, float basePitch) {
