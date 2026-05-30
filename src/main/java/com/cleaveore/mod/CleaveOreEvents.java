@@ -40,7 +40,7 @@ public class CleaveOreEvents {
     @SubscribeEvent
     public void onRightClickOre(PlayerInteractEvent.RightClickBlock event) {
         Player player = event.getEntity();
-        if (!(player instanceof ServerPlayer serverPlayer) || player.isCreative()) {
+        if (!(player instanceof ServerPlayer serverPlayer)) {
             return;
         }
         if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
@@ -100,7 +100,7 @@ public class CleaveOreEvents {
             Block.popResourceFromFace(serverLevel, pos, face, drop);
         }
         state.spawnAfterBreak(serverLevel, pos, tool, true);
-        if (!tool.isEmpty() && serverLevel.random.nextDouble() < CleaveOreConfig.get().pluckDurabilityChance) {
+        if (!player.isCreative() && !tool.isEmpty() && serverLevel.random.nextDouble() < CleaveOreConfig.get().pluckDurabilityChance) {
             tool.hurtAndBreak(1, serverPlayer, p -> p.broadcastBreakEvent(EquipmentSlot.MAINHAND));
         }
 
